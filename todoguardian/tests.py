@@ -352,13 +352,13 @@ class TodoTestCase(TestCase):
         today = timezone.localdate()
 
         # Test with and without due date
-        todo_with_due_date = Todo.objects.create(description="Test todo with due date", due_date=today + relativedelta(days=+5), start_date=today)
-        todo_without_due_date = Todo.objects.create(description="Test todo without due date", start_date=today)
+        todo_with_due_date = Todo.objects.create(description="Test todo with due date", due_date=today + relativedelta(days=+5), start_date=today + relativedelta(days=+1))
+        todo_without_due_date = Todo.objects.create(description="Test todo without due date", start_date=today + relativedelta(days=+1))
 
         todo_with_due_date.postpone(interval=5, unit=Todo.DateUnitChoices.DAY)
         self.assertEqual(todo_with_due_date.due_date, today + relativedelta(days=+10))
-        self.assertEqual(todo_with_due_date.start_date, today + relativedelta(days=+5))
+        self.assertEqual(todo_with_due_date.start_date, today + relativedelta(days=+6))
 
         todo_without_due_date.postpone(interval=5, unit=Todo.DateUnitChoices.DAY)
         self.assertIsNone(todo_without_due_date.due_date)
-        self.assertEqual(todo_without_due_date.start_date, today + relativedelta(days=+5))
+        self.assertEqual(todo_without_due_date.start_date, today + relativedelta(days=+6))

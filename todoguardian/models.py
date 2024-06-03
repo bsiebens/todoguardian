@@ -1,5 +1,7 @@
 from django.db import models
 import string
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 
 
 class Todo(models.Model):
@@ -40,5 +42,37 @@ class Todo(models.Model):
     def __str__(self):
         return self.description
 
-    def postpone(self, interval, unit=DateUnitChoices.DAY):
-        raise NotImplementedError
+    def postpone(self, interval: str | int, unit=DateUnitChoices.DAY) -> None:
+        """Will postpone the todo by the given interval and unit (default assumes the interval is given in days). To substract, mark the interval as '-' (e.g., -2)."""
+
+        # Check to see if the interval starts with a "+" or a "-", if nothing, we assume it's "+"
+        if type(interval) == int:
+            interval = str(interval)
+
+        if not interval.startswith("-") and not interval.startswith("+"):
+            interval = int("+{interval}".format(interval=interval))
+
+        match unit:
+            case Todo.DateUnitChoices.DAY:
+                interval = relativedelta(days=interval)
+
+            case Todo.DateUnitChoices.WEEK:
+                interval = relativedelta(weeks=interval)
+
+            case Todo.DateUnitChoices.MONTH:
+                interval = relativedelta(months=interval)
+
+            case Todo.DateUnitChoices.YEAR:
+                interval = relativedelta(years=interval)
+
+            case _:
+                raise NotImplementedError
+
+        # Postpone will extend both the due_date and start_date if set, if not set it will create a start_date but never a due_date
+        if self.due_date is not None:
+            self.due_date = self.due_date + interval
+
+        if self.start_date is not None:
+            self.start_date = self.start_date + interval
+        else:
+            self.start_date = timezone.localdate() + interval
