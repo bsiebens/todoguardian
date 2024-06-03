@@ -46,7 +46,7 @@ class Todo(models.Model):
         """Will postpone the todo by the given interval and unit (default assumes the interval is given in days). To substract, mark the interval as '-' (e.g., -2)."""
 
         # Check to see if the interval starts with a "+" or a "-", if nothing, we assume it's "+"
-        if type(interval) == int:
+        if type(interval) is int:
             interval = str(interval)
 
         if not interval.startswith("-") and not interval.startswith("+"):
