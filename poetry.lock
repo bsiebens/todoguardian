@@ -124,6 +124,17 @@ astroid = ">=2.15.2,<3.0.0"
 flake8 = ">=3.8.4,<7"
 
 [[package]]
+name = "freezegun"
+version = "1.5.1"
+description = "Let your Python tests travel through time"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+python-dateutil = ">=2.7"
+
+[[package]]
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
@@ -312,7 +323,7 @@ python-versions = ">=3.6"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "e6b210ad6222fcdea6b7afd16a42a707ead8473c4355f0f933abd7130194bee5"
+content-hash = "3feb2b36b77039c30ff0a38e14fef67be15af41cc5a22d7b46146584084057c8"
 
 [metadata.files]
 asgiref = []
@@ -324,6 +335,7 @@ django = []
 exceptiongroup = []
 flake8 = []
 flake8-django = []
+freezegun = []
 iniconfig = []
 lazy-object-proxy = []
 mccabe = []

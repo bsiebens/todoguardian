@@ -1,10 +1,34 @@
 from django.db import models
 import string
 from dateutil.relativedelta import relativedelta
-from django.utils import timezone
+from django.utils import timezone, text
 
 
 class Todo(models.Model):
+    """This class contains common fields for storing todos"""
+
+    description = models.TextField()
+    priority = models.CharField(max_length=1, choices={i: i for i in string.ascii_uppercase}, blank=True)
+    completed = models.BooleanField(default=False)
+    recurrence = models.CharField(max_length=5, blank=True, null=True)
+
+    start_date = models.DateField(blank=True, null=True)
+    due_date = models.DateField(blank=True, null=True)
+    completion_date = models.DateField(blank=True, null=True)
+
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.summary
+
+    @property
+    def summary(self) -> str:
+        """Returns a summary of the description (truncated to max. 20 words)"""
+        return text.Truncator(self.description).words(20)
+
+
+class TodoOld(models.Model):
     """The standard todo model. holds a description of the todo and a number of fields."""
 
     class DateUnitChoices(models.TextChoices):
@@ -41,6 +65,53 @@ class Todo(models.Model):
 
     def __str__(self):
         return self.description
+
+    def save(self, *args, **kwargs):
+        # If an item is marked as completed and if we have a recurrence tagged to, create a new todo (or verify if it not already exists)
+        if self.completed:
+            if self.completion_date is None or self.completion_date == "":
+                self.completion_date = timezone.localdate()
+
+            if self.recurrence_interval_number is not None and self.recurrence_interval_number != "" and self.recurrence_interval_number != 0:
+                interval = None
+
+                match self.recurrence_interval_unit:
+                    case Todo.DateUnitChoices.DAY:
+                        interval = relativedelta(days=self.recurrence_interval_number)
+
+                    case Todo.DateUnitChoices.WEEK:
+                        interval = relativedelta(weeks=self.recurrence_interval_number)
+
+                    case Todo.DateUnitChoices.MONTH:
+                        interval = relativedelta(months=self.recurrence_interval_number)
+
+                    case Todo.DateUnitChoices.YEAR:
+                        interval = relativedelta(years=self.recurrence_interval_number)
+
+                    case _:
+                        # If empty, we assume it's days.
+                        interval = relativedelta(days=self.recurrence_interval_number)
+
+                new_due_date = None
+                if self.due_date:
+                    new_due_date = self.due_date + interval if self.recurrence_strict_interval else self.completion_date + interval
+
+                new_start_date = None
+                if self.start_date:
+                    start_date_interval = self.due_date - self.start_date
+                    new_start_date = new_due_date - start_date_interval if new_due_date is not None else self.completion_date + interval
+
+                Todo.objects.create(
+                    description=self.description,
+                    priority=self.priority,
+                    recurrence_strict_interval=self.recurrence_strict_interval,
+                    recurrence_interval_number=self.recurrence_interval_number,
+                    recurrence_interval_unit=self.recurrence_interval_unit,
+                    due_date=new_due_date,
+                    start_date=new_start_date,
+                )
+
+        super(Todo, self).save(*args, **kwargs)
 
     def postpone(self, interval: str | int, unit=DateUnitChoices.DAY) -> None:
         """

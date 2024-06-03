@@ -2,7 +2,7 @@ from dateutil.relativedelta import relativedelta
 from django.test import TestCase
 from django.utils import timezone
 
-from .models import Todo
+from ..models import Todo
 
 
 class TodoTestCase(TestCase):
@@ -10,8 +10,8 @@ class TodoTestCase(TestCase):
         today = timezone.localdate()
 
         # Test with and without due date
-        todo_with_due_date = Todo.objects.create(description="testRecurrenceDay todo with due date", due_date=today + relativedelta(days=+5), recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.DAY)
-        todo_without_due_date = Todo.objects.create(description="testRecurrenceDay todo without due date", recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.DAY)
+        todo_with_due_date = Todo.objects.create(description="testRecurrenceDay todo with due date", due_date=today + relativedelta(days=+5), recurrence="1d")
+        todo_without_due_date = Todo.objects.create(description="testRecurrenceDay todo without due date", recurrence="1d")
 
         # If we test this with completion_date = due_date there would be no difference from using recurrence_strict=True, so we mark them completed one day later than today
         todo_with_due_date.completed = True
@@ -41,8 +41,8 @@ class TodoTestCase(TestCase):
         today = timezone.localdate()
 
         # Test with and without due date
-        todo_with_due_date = Todo.objects.create(description="testRecurrenceWeek todo with due date", due_date=today + relativedelta(days=+5), recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.WEEK)
-        todo_without_due_date = Todo.objects.create(description="testRecurrenceWeek todo without due date", recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.WEEK)
+        todo_with_due_date = Todo.objects.create(description="testRecurrenceWeek todo with due date", due_date=today + relativedelta(days=+5), recurrence="1w")
+        todo_without_due_date = Todo.objects.create(description="testRecurrenceWeek todo without due date", recurrence="1w")
 
         # If we test this with completion_date = due_date there would be no difference from using recurrence_strict=True, so we mark them completed one day later than today
         todo_with_due_date.completed = True
@@ -72,8 +72,8 @@ class TodoTestCase(TestCase):
         today = timezone.localdate()
 
         # Test with and without due date
-        todo_with_due_date = Todo.objects.create(description="testRecurrenceWeek todo with due date", due_date=today + relativedelta(days=+5), recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.MONTH)
-        todo_without_due_date = Todo.objects.create(description="testRecurrenceWeek todo without due date", recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.MONTH)
+        todo_with_due_date = Todo.objects.create(description="testRecurrenceWeek todo with due date", due_date=today + relativedelta(days=+5), recurrence="1m")
+        todo_without_due_date = Todo.objects.create(description="testRecurrenceWeek todo without due date", recurrence="1m")
 
         # If we test this with completion_date = due_date there would be no difference from using recurrence_strict=True, so we mark them completed one day later than today
         todo_with_due_date.completed = True
@@ -103,8 +103,8 @@ class TodoTestCase(TestCase):
         today = timezone.localdate()
 
         # Test with and without due date
-        todo_with_due_date = Todo.objects.create(description="testRecurrenceYear todo with due date", due_date=today + relativedelta(days=+5), recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.YEAR)
-        todo_without_due_date = Todo.objects.create(description="testRecurrenceYear todo without due date", recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.YEAR)
+        todo_with_due_date = Todo.objects.create(description="testRecurrenceYear todo with due date", due_date=today + relativedelta(days=+5), recurrence="1y")
+        todo_without_due_date = Todo.objects.create(description="testRecurrenceYear todo without due date", recurrence="1y")
 
         # If we test this with completion_date = due_date there would be no difference from using recurrence_strict=True, so we mark them completed one day later than today
         todo_with_due_date.completed = True
@@ -134,10 +134,8 @@ class TodoTestCase(TestCase):
         today = timezone.localdate()
 
         # Test with and without due date
-        todo_with_due_date = Todo.objects.create(
-            description="testRecurrenceStrictDay todo with due date", due_date=today + relativedelta(days=+5), recurrence_strict_interval=True, recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.DAY
-        )
-        todo_without_due_date = Todo.objects.create(description="testRecurrenceStrictDay todo without due date", recurrence_interval_number=1, recurrence_strict_interval=True, recurrence_interval_unit=Todo.DateUnitChoices.DAY)
+        todo_with_due_date = Todo.objects.create(description="testRecurrenceStrictDay todo with due date", due_date=today + relativedelta(days=+5), recurrence="+1d")
+        todo_without_due_date = Todo.objects.create(description="testRecurrenceStrictDay todo without due date", recurrence="+1d")
 
         todo_with_due_date.completed = True
         todo_with_due_date.completion_date = today + relativedelta(days=+1)
@@ -168,10 +166,8 @@ class TodoTestCase(TestCase):
         today = timezone.localdate()
 
         # Test with and without due date
-        todo_with_due_date = Todo.objects.create(
-            description="testRecurrenceStrictWeek todo with due date", due_date=today + relativedelta(days=+5), recurrence_strict_interval=True, recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.WEEK
-        )
-        todo_without_due_date = Todo.objects.create(description="testRecurrenceStrictWeek todo without due date", recurrence_interval_number=1, recurrence_strict_interval=True, recurrence_interval_unit=Todo.DateUnitChoices.WEEK)
+        todo_with_due_date = Todo.objects.create(description="testRecurrenceStrictWeek todo with due date", due_date=today + relativedelta(days=+5), recurrence="+1w")
+        todo_without_due_date = Todo.objects.create(description="testRecurrenceStrictWeek todo without due date", recurrence="+1w")
 
         todo_with_due_date.completed = True
         todo_with_due_date.completion_date = today + relativedelta(days=+1)
@@ -202,10 +198,8 @@ class TodoTestCase(TestCase):
         today = timezone.localdate()
 
         # Test with and without due date
-        todo_with_due_date = Todo.objects.create(
-            description="testRecurrenceStrictMonth todo with due date", due_date=today + relativedelta(days=+5), recurrence_strict_interval=True, recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.MONTH
-        )
-        todo_without_due_date = Todo.objects.create(description="testRecurrenceStrictMonth todo without due date", recurrence_interval_number=1, recurrence_strict_interval=True, recurrence_interval_unit=Todo.DateUnitChoices.MONTH)
+        todo_with_due_date = Todo.objects.create(description="testRecurrenceStrictMonth todo with due date", due_date=today + relativedelta(days=+5), recurrence="+1m")
+        todo_without_due_date = Todo.objects.create(description="testRecurrenceStrictMonth todo without due date", recurrence="+1m")
 
         todo_with_due_date.completed = True
         todo_with_due_date.completion_date = today + relativedelta(days=+1)
@@ -236,10 +230,8 @@ class TodoTestCase(TestCase):
         today = timezone.localdate()
 
         # Test with and without due date
-        todo_with_due_date = Todo.objects.create(
-            description="testRecurrenceStrictYear todo with due date", due_date=today + relativedelta(days=+5), recurrence_strict_interval=True, recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.YEAR
-        )
-        todo_without_due_date = Todo.objects.create(description="testRecurrenceStrictYear todo without due date", recurrence_interval_number=1, recurrence_strict_interval=True, recurrence_interval_unit=Todo.DateUnitChoices.YEAR)
+        todo_with_due_date = Todo.objects.create(description="testRecurrenceStrictYear todo with due date", due_date=today + relativedelta(days=+5), recurrence="+1y")
+        todo_without_due_date = Todo.objects.create(description="testRecurrenceStrictYear todo without due date", recurrence="+1y")
 
         todo_with_due_date.completed = True
         todo_with_due_date.completion_date = today + relativedelta(days=+1)
@@ -269,10 +261,8 @@ class TodoTestCase(TestCase):
     def testRecurrenceWithStartDateAndNoDueDate(self):
         today = timezone.localdate()
 
-        todo_with_start_date = Todo.objects.create(description="testRecurrenceWithStartDateAndNoDueDate without strict date", recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.WEEK, start_date=today)
-        todo_with_strict_start_date = Todo.objects.create(
-            description="testRecurrenceWithStartDateAndNoDueDate with strict date", recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.WEEK, recurrence_interval_strict=True, start_date=today
-        )
+        todo_with_start_date = Todo.objects.create(description="testRecurrenceWithStartDateAndNoDueDate without strict date", recurrence="1w")
+        todo_with_strict_start_date = Todo.objects.create(description="testRecurrenceWithStartDateAndNoDueDate with strict date", recurrence="+1w", start_date=today)
 
         todo_with_start_date.completed = True
         todo_with_start_date.completion_date = today + relativedelta(days=+1)
@@ -299,17 +289,8 @@ class TodoTestCase(TestCase):
     def testRecurrenceWithStartDateAndDueDate(self):
         today = timezone.localdate()
 
-        todo_with_start_date = Todo.objects.create(
-            description="testRecurrenceWithStartDateAndDueDate without strict date", recurrence_interval_number=1, recurrence_interval_unit=Todo.DateUnitChoices.WEEK, start_date=today, due_date=today + relativedelta(days=+2)
-        )
-        todo_with_strict_start_date = Todo.objects.create(
-            description="testRecurrenceWithStartDateAndDueDate with strict date",
-            recurrence_interval_number=1,
-            recurrence_interval_unit=Todo.DateUnitChoices.WEEK,
-            recurrence_interval_strict=True,
-            start_date=today,
-            due_date=today + relativedelta(days=+2),
-        )
+        todo_with_start_date = Todo.objects.create(description="testRecurrenceWithStartDateAndDueDate without strict date", recurrence="1w", start_date=today, due_date=today + relativedelta(days=+2))
+        todo_with_strict_start_date = Todo.objects.create(description="testRecurrenceWithStartDateAndDueDate with strict date", recurrence="+1w", start_date=today, due_date=today + relativedelta(days=+2))
 
         todo_with_start_date.completed = True
         todo_with_start_date.completion_date = today + relativedelta(days=+1)
@@ -340,11 +321,11 @@ class TodoTestCase(TestCase):
         todo_with_due_date = Todo.objects.create(description="Test todo with due date", due_date=today + relativedelta(days=+5))
         todo_without_due_date = Todo.objects.create(description="Test todo without due date")
 
-        todo_with_due_date.postpone(interval=5, unit=Todo.DateUnitChoices.DAY)
+        todo_with_due_date.postpone(interval="5d")
         self.assertEqual(todo_with_due_date.due_date, today + relativedelta(days=+10))
         self.assertEqual(todo_with_due_date.start_date, today + relativedelta(days=+5))
 
-        todo_without_due_date.postpone(interval=5, unit=Todo.DateUnitChoices.DAY)
+        todo_without_due_date.postpone(interval="5d")
         self.assertIsNone(todo_without_due_date.due_date)
         self.assertEqual(todo_without_due_date.start_date, today + relativedelta(days=+5))
 
@@ -355,10 +336,10 @@ class TodoTestCase(TestCase):
         todo_with_due_date = Todo.objects.create(description="Test todo with due date", due_date=today + relativedelta(days=+5), start_date=today + relativedelta(days=+1))
         todo_without_due_date = Todo.objects.create(description="Test todo without due date", start_date=today + relativedelta(days=+1))
 
-        todo_with_due_date.postpone(interval=5, unit=Todo.DateUnitChoices.DAY)
+        todo_with_due_date.postpone(interval="5d")
         self.assertEqual(todo_with_due_date.due_date, today + relativedelta(days=+10))
         self.assertEqual(todo_with_due_date.start_date, today + relativedelta(days=+6))
 
-        todo_without_due_date.postpone(interval=5, unit=Todo.DateUnitChoices.DAY)
+        todo_without_due_date.postpone(interval="5d")
         self.assertIsNone(todo_without_due_date.due_date)
         self.assertEqual(todo_without_due_date.start_date, today + relativedelta(days=+6))
