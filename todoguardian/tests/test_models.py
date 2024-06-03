@@ -6,6 +6,42 @@ from ..models import Todo
 
 
 class TodoTestCase(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.bare_todo = Todo.objects.create(description="Bare Todo")
+        self.todo_with_due = Todo.objects.create(description="Todo with due date", due_date=timezone.localdate() + relativedelta(days=5))
+        self.todo_with_start = Todo.objects.create(description="Todo with due date", start_date=timezone.localdate() + relativedelta(days=1))
+
+    def testNotCompleted(self):
+        self.assertFalse(self.bare_todo.is_completed)
+
+    def testCompletedWithDate(self):
+        yesterday = timezone.localdate() + relativedelta(days=-1)
+        self.bare_todo.complete(yesterday)
+
+        self.assertEqual(self.bare_todo.completion_date, yesterday)
+        self.assertTrue(self.bare_todo.is_completed)
+
+    def testCompletedNoDate(self):
+        self.bare_todo.complete()
+
+        self.assertEqual(self.bare_todo.completion_date, timezone.localdate())
+        self.assertTrue(self.bare_todo.is_completed)
+
+    def testPostponeDueDate(self):
+        self.todo_with_due.postpone("5d")
+        self.assertEqual(self.todo_with_due.due_date, timezone.localdate() + relativedelta(days=10))
+
+    def testPostponeNoStartDate(self):
+        self.todo_with_due.postpone("5d")
+        self.assertEqual(self.todo_with_due.start_date, timezone.localdate() + relativedelta(days=5))
+
+    def testPostponeStartDate(self):
+        self.todo_with_start.postpone("5d")
+        self.assertEqual(self.todo_with_start.start_date, timezone.localdate() + relativedelta(days=6))
+        self.assertIsNone(self.todo_with_start.due_date)
+
     def testRecurrenceDay(self):
         today = timezone.localdate()
 
@@ -313,33 +349,3 @@ class TodoTestCase(TestCase):
         self.assertIsNone(new_todo_with_strict_start_date.completion_date)
         self.assertEqual(todo_with_strict_start_date.completion_date, today + relativedelta(days=+1))
         self.assertEqual(new_todo_with_strict_start_date.start_date, todo_with_strict_start_date.due_date + relativedelta(weeks=+1) + relativedelta(days=-2))
-
-    def testPostpone(self):
-        today = timezone.localdate()
-
-        # Test with and without due date
-        todo_with_due_date = Todo.objects.create(description="Test todo with due date", due_date=today + relativedelta(days=+5))
-        todo_without_due_date = Todo.objects.create(description="Test todo without due date")
-
-        todo_with_due_date.postpone(pattern="5d")
-        self.assertEqual(todo_with_due_date.due_date, today + relativedelta(days=+10))
-        self.assertEqual(todo_with_due_date.start_date, today + relativedelta(days=+5))
-
-        todo_without_due_date.postpone(pattern="5d")
-        self.assertIsNone(todo_without_due_date.due_date)
-        self.assertEqual(todo_without_due_date.start_date, today + relativedelta(days=+5))
-
-    def testPostponeWithStartDate(self):
-        today = timezone.localdate()
-
-        # Test with and without due date
-        todo_with_due_date = Todo.objects.create(description="Test todo with due date", due_date=today + relativedelta(days=+5), start_date=today + relativedelta(days=+1))
-        todo_without_due_date = Todo.objects.create(description="Test todo without due date", start_date=today + relativedelta(days=+1))
-
-        todo_with_due_date.postpone(pattern="5d")
-        self.assertEqual(todo_with_due_date.due_date, today + relativedelta(days=+10))
-        self.assertEqual(todo_with_due_date.start_date, today + relativedelta(days=+6))
-
-        todo_without_due_date.postpone(pattern="5d")
-        self.assertIsNone(todo_without_due_date.due_date)
-        self.assertEqual(todo_without_due_date.start_date, today + relativedelta(days=+6))

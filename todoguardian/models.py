@@ -3,6 +3,7 @@ import string
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone, text
 from .date_functions import convert_pattern_to_date
+from datetime import date
 
 
 class Todo(models.Model):
@@ -10,7 +11,6 @@ class Todo(models.Model):
 
     description = models.TextField()
     priority = models.CharField(max_length=1, choices={i: i for i in string.ascii_uppercase}, blank=True)
-    completed = models.BooleanField(default=False)
     recurrence = models.CharField(max_length=5, blank=True, null=True)
 
     start_date = models.DateField(blank=True, null=True)
@@ -27,6 +27,17 @@ class Todo(models.Model):
     def summary(self) -> str:
         """Returns a summary of the description (truncated to max. 20 words)"""
         return text.Truncator(self.description).words(20)
+
+    @property
+    def is_completed(self) -> bool:
+        return self.completion_date is not None
+
+    def save(self, *args, **kwargs):
+        super(Todo, self).save(*args, **kwargs)
+
+    def complete(self, completion_date: date = timezone.localdate()) -> None:
+        self.completion_date = completion_date
+        self.save()
 
     def postpone(self, pattern: str) -> None:
         """
