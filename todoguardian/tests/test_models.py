@@ -321,11 +321,11 @@ class TodoTestCase(TestCase):
         todo_with_due_date = Todo.objects.create(description="Test todo with due date", due_date=today + relativedelta(days=+5))
         todo_without_due_date = Todo.objects.create(description="Test todo without due date")
 
-        todo_with_due_date.postpone(interval="5d")
+        todo_with_due_date.postpone(pattern="5d")
         self.assertEqual(todo_with_due_date.due_date, today + relativedelta(days=+10))
         self.assertEqual(todo_with_due_date.start_date, today + relativedelta(days=+5))
 
-        todo_without_due_date.postpone(interval="5d")
+        todo_without_due_date.postpone(pattern="5d")
         self.assertIsNone(todo_without_due_date.due_date)
         self.assertEqual(todo_without_due_date.start_date, today + relativedelta(days=+5))
 
@@ -336,10 +336,10 @@ class TodoTestCase(TestCase):
         todo_with_due_date = Todo.objects.create(description="Test todo with due date", due_date=today + relativedelta(days=+5), start_date=today + relativedelta(days=+1))
         todo_without_due_date = Todo.objects.create(description="Test todo without due date", start_date=today + relativedelta(days=+1))
 
-        todo_with_due_date.postpone(interval="5d")
+        todo_with_due_date.postpone(pattern="5d")
         self.assertEqual(todo_with_due_date.due_date, today + relativedelta(days=+10))
         self.assertEqual(todo_with_due_date.start_date, today + relativedelta(days=+6))
 
-        todo_without_due_date.postpone(interval="5d")
+        todo_without_due_date.postpone(pattern="5d")
         self.assertIsNone(todo_without_due_date.due_date)
         self.assertEqual(todo_without_due_date.start_date, today + relativedelta(days=+6))

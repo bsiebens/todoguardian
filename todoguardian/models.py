@@ -2,6 +2,7 @@ from django.db import models
 import string
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone, text
+from .date_functions import convert_pattern_to_date
 
 
 class Todo(models.Model):
@@ -26,6 +27,21 @@ class Todo(models.Model):
     def summary(self) -> str:
         """Returns a summary of the description (truncated to max. 20 words)"""
         return text.Truncator(self.description).words(20)
+
+    def postpone(self, pattern: str) -> None:
+        """
+        Postpones the todo based on the given pattern. Following rules are followed:
+
+        * if due_date is set: new due_date = due_date + pattern
+        * if start_date is set: new start_date = start_date + pattern
+        * if no start_date is set: new start_date = today + pattern
+        """
+
+        if self.due_date:
+            self.due_date = convert_pattern_to_date(pattern, self.due_date)
+
+        self.start_date = convert_pattern_to_date(pattern, self.start_date)
+        self.save()
 
 
 class TodoOld(models.Model):
