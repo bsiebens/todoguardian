@@ -43,7 +43,12 @@ class Todo(models.Model):
         return self.description
 
     def postpone(self, interval: str | int, unit=DateUnitChoices.DAY) -> None:
-        """Will postpone the todo by the given interval and unit (default assumes the interval is given in days). To substract, mark the interval as '-' (e.g., -2)."""
+        """
+        Will postpone the todo by the given interval and unit (default assumes the interval is given in days). To substract, mark the interval as '-' (e.g., -2). Following rules are taken into account:
+            - If a due_date exists: new due_date = old due_date + interval
+            - If a start_date exists: new start_date = old start_date + interval
+            - If there is no start_date: a new start_date will be created equal to today + interval
+        """
 
         # Check to see if the interval starts with a "+" or a "-", if nothing, we assume it's "+"
         if type(interval) is int:
