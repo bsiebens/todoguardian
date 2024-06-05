@@ -55,6 +55,10 @@ class Todo(models.Model):
         self.start_date = convert_pattern_to_date(pattern, self.start_date)
         self.save()
 
+    @classmethod
+    def advance_todo(cls, todo: "Todo", offset: date = timezone.localdate()) -> "Todo":
+        raise NotImplementedError
+
 
 class TodoOld(models.Model):
     """The standard todo model. holds a description of the todo and a number of fields."""
@@ -180,3 +184,7 @@ class TodoOld(models.Model):
             self.start_date = self.start_date + interval
         else:
             self.start_date = timezone.localdate() + interval
+
+    @classmethod
+    def advance_todo(cls, todo: Todo, offset: date = timezone.localdate()) -> Todo:
+        raise NotImplementedError
