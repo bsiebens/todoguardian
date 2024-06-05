@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 from django.utils import timezone, text
 from .date_functions import convert_pattern_to_date
 from datetime import date
+from .exceptions import NoRecurrenceException
 
 
 class Todo(models.Model):
