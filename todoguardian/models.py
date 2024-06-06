@@ -33,6 +33,18 @@ class Todo(models.Model):
     def is_completed(self) -> bool:
         return self.completion_date is not None
 
+    @property
+    def length(self) -> int:
+        """Returns the length (of days) between start and due date."""
+        start = self.start_date or self.created.date()
+        end = self.due_date
+
+        if start and end and start < end:
+            difference = end - start
+            return difference.days
+
+        return 0
+
     def save(self, *args, **kwargs):
         super(Todo, self).save(*args, **kwargs)
 
@@ -57,6 +69,81 @@ class Todo(models.Model):
 
     @classmethod
     def advance_todo(cls, todo: "Todo", offset: date = timezone.localdate()) -> "Todo":
+        """
+        Given a todo item, it will return a new instance of that todo item with start and due date shifted.
+
+        If recurrence is defined as a strict rule, it will be calculated based on the due date or the offset date if no due date is specified.
+        If no recurrence is set, this will trigger an error.
+        """
+        new_todo = Todo(description=todo.description, priority=todo.priority, recurrence=todo.recurrence)
+        pattern = todo.recurrence
+        strict = False
+
+        if todo.recurrence is None:
+            raise NoRecurrenceException()
+
+        if pattern is None or pattern == "":
+            raise NoRecurrenceException()
+
+        if pattern.startswith("+"):
+            strict = True
+            pattern = pattern[1:]
+
+        if strict:
+            offset = todo.due_date or offset
+
+        length = todo.length
+        new_due_date = convert_pattern_to_date(pattern, offset)
+
+        if not new_due_date:
+            raise NoRecurrenceException()
+
+        new_todo.due_date = new_due_date
+
+        if todo.start_date:
+            new_start_date = new_due_date - relativedelta(days=length)
+            new_todo.start_date = new_start_date
+
+        return new_todo
+
+        """ pattern = todo.recurrence
+
+    if pattern is None or pattern == "":
+        raise AttributeError
+
+    if pattern.startswith("+"):
+        strict = True
+        pattern = pattern[1:]
+
+    if strict:
+        offset = todo.due_date or offset or timezone.localdate()
+    else:
+        offset = offset or timezone.localdate()
+
+    # Calculate the duration of a given todo
+    start = todo.start_date or todo.created
+    due = todo.due_date
+    duration = 0
+
+    if start and due and start < due:
+        duration = due - start
+        duration = duration.days
+
+    new_due_date = convert_pattern_to_date(pattern, offset)
+
+    new_start_date = None
+    if todo.start_date is not None:
+        new_start_date = new_due_date - relativedelta(days=duration)
+
+    return Todo.objects.create(
+        description=todo.description,
+        priority=todo.priority,
+        recurrence=todo.recurrence,
+        start_date=new_start_date,
+        due_date=new_due_date,
+    )
+ """
+
         raise NotImplementedError
 
 
