@@ -69,3 +69,12 @@ class Todo(models.Model):
 
         self.start_date = to_date(pattern, self.start_date)
         self.save()
+
+    def to_string(self) -> str:
+        """Returns a todo.txt compliant string"""
+        ...
+
+    @classmethod
+    def from_string(cls, string: str) -> "Todo":
+        """Converts a todo.txt compliant string into a new object"""
+        ...
