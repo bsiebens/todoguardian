@@ -88,6 +88,19 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-environ"
+version = "0.11.2"
+description = "A package that allows you to utilize 12factor inspired environment variables to configure your Django application."
+category = "main"
+optional = false
+python-versions = ">=3.6,<4"
+
+[package.extras]
+develop = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)", "furo (>=2021.8.17b43,<2021.9.0)", "sphinx (>=3.5.0)", "sphinx-notfound-page"]
+docs = ["furo (>=2021.8.17b43,<2021.9.0)", "sphinx (>=3.5.0)", "sphinx-notfound-page"]
+testing = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)"]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.2.1"
 description = "Backport of PEP 654 (exception groups)"
@@ -323,7 +336,7 @@ python-versions = ">=3.6"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "3feb2b36b77039c30ff0a38e14fef67be15af41cc5a22d7b46146584084057c8"
+content-hash = "ba5af8cf3bdb71813a821326d81216f9866e5bdca3fab3f363034680b6415ae9"
 
 [metadata.files]
 asgiref = []
@@ -332,6 +345,7 @@ black = []
 click = []
 colorama = []
 django = []
+django-environ = []
 exceptiongroup = []
 flake8 = []
 flake8-django = []

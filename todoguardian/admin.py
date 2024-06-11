@@ -1,8 +1,8 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils import timezone
-from .models import Todo
 from django.utils.translation import ngettext
-from django.contrib import messages
+
+from .models import Todo
 
 
 @admin.register(Todo)
