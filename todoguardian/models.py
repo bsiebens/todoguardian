@@ -7,17 +7,44 @@ from django.utils import text, timezone
 from .functions.date import to_date
 
 
+class Project(models.Model):
+    """A project can be any type of collection of todos"""
+
+    name = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+
+
+class Context(models.Model):
+    """A context can be any type of similar todos or related todos"""
+
+    name = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+
+
 class Todo(models.Model):
     """This class contains common fields for storing todos"""
 
     description = models.TextField()
     priority = models.CharField(max_length=1, choices={i: i for i in string.ascii_uppercase}, blank=True)
-    recurrence = models.CharField(max_length=5, blank=True, null=True, help_text="Recurrence can be defined as a string ([0-9][bdwmy]), add + in front to have strict recurrence.")
+    recurrence = models.CharField(max_length=5, blank=True, help_text="Recurrence can be defined as a string ([0-9][bdwmy]), add + in front to have strict recurrence.")
 
     start_date = models.DateField(blank=True, null=True)
     due_date = models.DateField(blank=True, null=True)
     completion_date = models.DateField(blank=True, null=True)
     _completed = models.BooleanField("completed?", default=False)
+
+    projects = models.ManyToManyField(Project, blank=True, related_name="todos")
+    contexts = models.ManyToManyField(Context, blank=True, related_name="todos")
 
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
