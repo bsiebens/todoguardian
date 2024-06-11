@@ -20,13 +20,20 @@ class TodoTestCase(TestCase):
 
     def testCompletedWithDate(self):
         yesterday = timezone.localdate() + relativedelta(days=-1)
-        self.bare_todo.complete(yesterday)
+        self.bare_todo.mark_complete(yesterday)
 
         self.assertEqual(self.bare_todo.completion_date, yesterday)
         self.assertTrue(self.bare_todo._completed)
 
+    def testRevertComplete(self):
+        self.bare_todo.mark_complete()
+        self.bare_todo.mark_not_complete()
+
+        self.assertIsNone(self.bare_todo.completion_date)
+        self.assertFalse(self.bare_todo._completed)
+
     def testCompletedNoDate(self):
-        self.bare_todo.complete()
+        self.bare_todo.mark_complete()
 
         self.assertEqual(self.bare_todo.completion_date, timezone.localdate())
         self.assertTrue(self.bare_todo._completed)

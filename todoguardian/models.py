@@ -12,7 +12,7 @@ class Todo(models.Model):
 
     description = models.TextField()
     priority = models.CharField(max_length=1, choices={i: i for i in string.ascii_uppercase}, blank=True)
-    recurrence = models.CharField(max_length=5, blank=True, null=True)
+    recurrence = models.CharField(max_length=5, blank=True, null=True, help_text="Recurrence can be defined as a string ([0-9][bdwmy]), add + in front to have strict recurrence.")
 
     start_date = models.DateField(blank=True, null=True)
     due_date = models.DateField(blank=True, null=True)
@@ -47,12 +47,12 @@ class Todo(models.Model):
 
         super(Todo, self).save(*args, **kwargs)
 
-    def complete(self, completion_date: date = timezone.localdate()) -> None:
+    def mark_complete(self, completion_date: date = timezone.localdate()) -> None:
         """Marks a todo as completed, using the supplied completion_date (default: today)"""
         self.completion_date = completion_date
         self.save()
 
-    def uncomplete(self) -> None:
+    def mark_not_complete(self) -> None:
         """Marks a todo as not completed, removing any completion information."""
         self.completion_date = None
         self.save()
@@ -75,6 +75,8 @@ class Todo(models.Model):
     def to_string(self) -> str:
         """Returns a todo.txt compliant string"""
         ...
+
+    to_string.short_description = "Todo.txt string"
 
     @classmethod
     def from_string(cls, string: str) -> "Todo":
