@@ -19,6 +19,18 @@ class Project(models.Model):
         ordering = ["name"]
 
 
+class Context(models.Model):
+    """A context can be any type of similar todos or related todos"""
+
+    name = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+
+
 class Todo(models.Model):
     """This class contains common fields for storing todos"""
 
@@ -32,6 +44,7 @@ class Todo(models.Model):
     _completed = models.BooleanField("completed?", default=False)
 
     projects = models.ManyToManyField(Project, blank=True, related_name="todos")
+    contexts = models.ManyToManyField(Context, blank=True, related_name="todos")
 
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

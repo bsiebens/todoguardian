@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django.utils import timezone
 from django.utils.translation import ngettext
 
-from .models import Todo, Project
+from .models import Todo, Project, Context
 
 
 @admin.register(Todo)
@@ -40,17 +40,18 @@ class TodoAdmin(admin.ModelAdmin):
     date_hierarchy = "due_date"
     list_display = ["id", "description", "priority", "due_date", "start_date", "_completed"]
     list_display_links = ["description"]
-    list_filter = ["_completed", "projects"]
+    list_filter = ["_completed", "projects", "contexts"]
     ordering = ["-due_date", "start_date", "priority"]
     actions = [mark_completed, mark_not_completed]
     search_fields = ["description"]
     readonly_fields = ["created", "modified", "to_string"]
-    filter_horizontal = ["projects"]
+    filter_horizontal = ["projects", "contexts"]
     fieldsets = [
-        [None, {"fields": ["description", ("priority", "recurrence"), "projects"]}],
+        [None, {"fields": ["description", ("priority", "recurrence"), "projects", "contexts"]}],
         ["DATES", {"fields": [("due_date", "start_date"), "completion_date"]}],
         ["GENERAL INFORMATION", {"fields": [("created", "modified"), "to_string"]}],
     ]
 
 
 admin.site.register(Project)
+admin.site.register(Context)
