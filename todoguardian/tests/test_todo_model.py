@@ -16,20 +16,20 @@ class TodoTestCase(TestCase):
         self.strict_recurring_todo = Todo.objects.create(description="Strict Recurring Todo", recurrence="+1w")
 
     def testNotCompleted(self):
-        self.assertFalse(self.bare_todo.is_completed)
+        self.assertFalse(self.bare_todo._completed)
 
     def testCompletedWithDate(self):
         yesterday = timezone.localdate() + relativedelta(days=-1)
         self.bare_todo.complete(yesterday)
 
         self.assertEqual(self.bare_todo.completion_date, yesterday)
-        self.assertTrue(self.bare_todo.is_completed)
+        self.assertTrue(self.bare_todo._completed)
 
     def testCompletedNoDate(self):
         self.bare_todo.complete()
 
         self.assertEqual(self.bare_todo.completion_date, timezone.localdate())
-        self.assertTrue(self.bare_todo.is_completed)
+        self.assertTrue(self.bare_todo._completed)
 
     def testPostponeDueDate(self):
         self.todo_with_due.postpone("5d")

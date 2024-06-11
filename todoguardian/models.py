@@ -17,6 +17,7 @@ class Todo(models.Model):
     start_date = models.DateField(blank=True, null=True)
     due_date = models.DateField(blank=True, null=True)
     completion_date = models.DateField(blank=True, null=True)
+    _completed = models.BooleanField("completed?", default=False)
 
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -28,10 +29,6 @@ class Todo(models.Model):
     def summary(self) -> str:
         """Returns a summary of the description (truncated to max. 20 words)"""
         return text.Truncator(self.description).words(20)
-
-    @property
-    def is_completed(self) -> bool:
-        return self.completion_date is not None
 
     @property
     def length(self) -> int:
@@ -46,11 +43,18 @@ class Todo(models.Model):
         return 0
 
     def save(self, *args, **kwargs):
+        self._completed = self.completion_date is not None
+
         super(Todo, self).save(*args, **kwargs)
 
     def complete(self, completion_date: date = timezone.localdate()) -> None:
-        """ "Marks a todo as completed, using the supplied completion_date (default: today)"""
+        """Marks a todo as completed, using the supplied completion_date (default: today)"""
         self.completion_date = completion_date
+        self.save()
+
+    def uncomplete(self) -> None:
+        """Marks a todo as not completed, removing any completion information."""
+        self.completion_date = None
         self.save()
 
     def postpone(self, pattern: str) -> None:
