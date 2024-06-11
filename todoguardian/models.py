@@ -5,8 +5,6 @@ from django.db import models
 from django.utils import text, timezone
 
 from .functions.date import to_date
-from .functions.recurrence import advance_todo
-from .exceptions import NoRecurrenceException
 
 
 class Todo(models.Model):
@@ -51,7 +49,7 @@ class Todo(models.Model):
         super(Todo, self).save(*args, **kwargs)
 
     def complete(self, completion_date: date = timezone.localdate()) -> None:
-        """"Marks a todo as completed, using the supplied completion_date (default: today)"""
+        """ "Marks a todo as completed, using the supplied completion_date (default: today)"""
         self.completion_date = completion_date
         self.save()
 
