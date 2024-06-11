@@ -79,13 +79,11 @@ def _calculate_date_from_pattern(length: int | str, period: str, offset: date | 
                 if result.weekday() >= 5:
                     continue
 
-                days = days - 1 if delta > 0 else days + 1
+                days = days - delta
 
             return result
         case _:
             return None
-
-    return None
 
 
 def _calculate_date_from_weekday(weekday: str) -> date:
