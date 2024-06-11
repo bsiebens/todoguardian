@@ -7,6 +7,7 @@ from django.utils import text, timezone
 from .functions.date import to_date
 from .functions.recurrence import advance_todo
 from .exceptions import NoRecurrenceException
+from pytodotxt import Task
 
 
 class Todo(models.Model):
@@ -51,7 +52,7 @@ class Todo(models.Model):
         super(Todo, self).save(*args, **kwargs)
 
     def complete(self, completion_date: date = timezone.localdate()) -> None:
-        """"Marks a todo as completed, using the supplied completion_date (default: today)"""
+        """ "Marks a todo as completed, using the supplied completion_date (default: today)"""
         self.completion_date = completion_date
         self.save()
 
@@ -72,7 +73,22 @@ class Todo(models.Model):
 
     def to_string(self) -> str:
         """Returns a todo.txt compliant string"""
-        ...
+        task = Task(self.description)
+
+        task.priority = self.priority
+        task.is_completed = self.is_completed
+        task.creation_date = self.created.date()
+
+        if self.due_date is not None:
+            task.add_attribute("due", self.due_date.isoformat())
+
+        if self.start_date is not None:
+            task.add_attribute("t", self.start_date.isoformat())
+
+        if self.recurrence is not None and self.recurrence != "":
+            task.add_attribute("rec", self.recurrence)
+
+        return str(task)
 
     @classmethod
     def from_string(cls, string: str) -> "Todo":
