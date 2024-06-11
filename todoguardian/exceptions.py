@@ -1,0 +1,2 @@
+class NoRecurrenceException(Exception):
+    pass
