@@ -1,4 +1,7 @@
+from typing import Any
 from django.contrib import admin, messages
+from django.db.models.query import QuerySet
+from django.http import HttpRequest
 from django.utils import timezone
 from django.utils.translation import ngettext
 from django.utils.safestring import mark_safe
@@ -46,19 +49,24 @@ class TodoAdmin(admin.ModelAdmin):
             messages.SUCCESS,
         )
 
-    def list_projects(self, instance):
+    def list_projects(self, instance) -> str:
         projects = [project.name for project in instance.projects.order_by("name")]
 
         return mark_safe("<br />".join(projects))
     
     list_projects.short_description = "Projects"
     
-    def list_contexts(self, instance):
+    def list_contexts(self, instance) -> str:
         contexts = [context.name for context in instance.contexts.order_by("name")]
 
         return mark_safe("<br />".join(contexts))
     
     list_contexts.short_description = "Contexts"
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
+        queryset = super().get_queryset(request)
+
+        return queryset.prefetch_related("projects", "contexts")
 
     date_hierarchy = "due_date"
     list_display = ["id", "description", "priority", "due_date", "start_date", "_completed", "list_projects", "list_contexts"]
