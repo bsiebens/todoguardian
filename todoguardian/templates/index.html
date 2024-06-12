@@ -1,1 +1,13 @@
-<h1>Hello world!</h1>
+{% extends "_base.html" %}
+
+{% load humanize %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold">ToDo</h1>
+
+    <ul>
+        {% for todo in todos %}
+            <li>{{ todo.id }} - {{ todo.description }} ({{ todo.priority }}) Due: {{ todo.due_date|naturalday }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

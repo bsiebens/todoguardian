@@ -41,7 +41,7 @@ class TodoAdmin(admin.ModelAdmin):
     list_display = ["id", "description", "priority", "due_date", "start_date", "_completed"]
     list_display_links = ["description"]
     list_filter = ["_completed", "projects", "contexts"]
-    ordering = ["-due_date", "start_date", "priority"]
+    ordering = ["due_date", "start_date", "priority"]
     actions = [mark_completed, mark_not_completed]
     search_fields = ["description"]
     readonly_fields = ["created", "modified", "to_string"]
