@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.utils.translation import ngettext
 
 from .models import Todo, Project, Context
+from .functions.recurrence import advance_todo
+from .exceptions import NoRecurrenceException
 
 
 @admin.register(Todo)
@@ -10,6 +12,12 @@ class TodoAdmin(admin.ModelAdmin):
     @admin.action(description="Mark selected todos as completed")
     def mark_completed(self, request, queryset):
         updated = queryset.update(completion_date=timezone.localdate(), _completed=True)
+
+        for todo in queryset:
+            try:
+                advance_todo(todo)
+            except NoRecurrenceException:
+                pass
 
         self.message_user(
             request,
@@ -41,7 +49,7 @@ class TodoAdmin(admin.ModelAdmin):
     list_display = ["id", "description", "priority", "due_date", "start_date", "_completed"]
     list_display_links = ["description"]
     list_filter = ["_completed", "projects", "contexts"]
-    ordering = ["-due_date", "start_date", "priority"]
+    ordering = ["due_date", "start_date", "priority"]
     actions = [mark_completed, mark_not_completed]
     search_fields = ["description"]
     readonly_fields = ["created", "modified", "to_string"]

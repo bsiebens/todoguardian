@@ -88,6 +88,30 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-appconf"
+version = "1.0.6"
+description = "A helper class for handling configuration defaults of packaged apps gracefully."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+django = "*"
+
+[[package]]
+name = "django-compressor"
+version = "4.4"
+description = "('Compresses linked and inline JavaScript or CSS into single cached files.',)"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+django-appconf = ">=1.0.3"
+rcssmin = "1.1.1"
+rjsmin = "1.2.1"
+
+[[package]]
 name = "django-environ"
 version = "0.11.2"
 description = "A package that allows you to utilize 12factor inspired environment variables to configure your Django application."
@@ -282,6 +306,22 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 six = ">=1.5"
 
 [[package]]
+name = "rcssmin"
+version = "1.1.1"
+description = "CSS Minifier"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "rjsmin"
+version = "1.2.1"
+description = "Javascript Minifier"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -336,7 +376,7 @@ python-versions = ">=3.6"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "ba5af8cf3bdb71813a821326d81216f9866e5bdca3fab3f363034680b6415ae9"
+content-hash = "f8e3f86b8be42a01b3eefe293455706351d20393f5bf16d3c8ca47b8affd57be"
 
 [metadata.files]
 asgiref = []
@@ -345,6 +385,8 @@ black = []
 click = []
 colorama = []
 django = []
+django-appconf = []
+django-compressor = []
 django-environ = []
 exceptiongroup = []
 flake8 = []
@@ -363,6 +405,8 @@ pyflakes = []
 pytest = []
 pytest-django = []
 python-dateutil = []
+rcssmin = []
+rjsmin = []
 six = []
 sqlparse = []
 tomli = []
