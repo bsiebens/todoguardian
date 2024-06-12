@@ -16,9 +16,10 @@
 </head>
 
 <body>
-    <div class="navbar bg-base-100 border-b border-base-300">
+    <div class="navbar bg-base-200 border-b border-base-300">
         <div class="flex-1">
-            <a class="btn btn-ghost text-xl">ToDoGuardian</a>
+            <img src="{% static 'images/logo.png' %}" class="h-14 mx-2">
+            <a class="ml-4 font-semibold text-xl" href="/">ToDoGuardian</a>
         </div>
 
         <div class="flex-none">
@@ -34,15 +35,15 @@
         </div>
     </div>
         
-    <div class="container mx-auto">
+    <div class="container mx-auto my-4 bg-base-100 rounded border border-base-300 p-2">
         <div class="bg-yellow-300">ACTIONS</div>
         
-        <div class="bg-green-300">
+        <div>
             {% block content %}CONTENT{% endblock %}
         </div>
     </div>
 
-    <footer class="footer footer-center p-4 bg-base-300 text-base-content">
+    <footer class="footer footer-center p-4 bg-base-200 text-base-content border-t border-b border-base-300">
         <aside>
             <p>Copyright &copy; {% now "Y" %} - ToDoGuardian was created by Bernard Siebens and distributed under MIT License</p>
         </aside>
