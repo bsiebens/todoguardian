@@ -39,7 +39,7 @@ class Todo(models.Model):
     priority = models.CharField(max_length=1, choices={i: i for i in string.ascii_uppercase}, blank=True)
     recurrence = models.CharField(max_length=5, blank=True, help_text="Recurrence can be defined as a string ([0-9][bdwmy]), add + in front to have strict recurrence.")
 
-    start_date = models.DateField(blank=True, null=True)
+    start_date = models.DateField(default=timezone.localdate)
     due_date = models.DateField(blank=True, null=True)
     completion_date = models.DateField(blank=True, null=True)
     _completed = models.BooleanField("completed?", default=False)
@@ -71,14 +71,18 @@ class Todo(models.Model):
         return 0
 
     @property
-    def overdue(self) -> bool:
+    def is_overdue(self) -> bool:
         """Returns True if a todo is past due"""
         return timezone.localdate() > self.due_date
 
     @property
-    def due_soon(self) -> bool:
+    def is_due_soon(self) -> bool:
         """Returns true if a todo is due in the next 3 days"""
         return timezone.localdate() + relativedelta(days=3) > self.due_date
+
+    @property
+    def is_completed(self) -> bool:
+        return self.completion_date is not None
 
     def save(self, *args, **kwargs):
         self._completed = self.completion_date is not None

@@ -25,7 +25,15 @@
                             </div>
 
                             <div class="flex">
-                                ICON
+                                {% if todo.is_completed %}
+                                    COMPLETED
+                                {% elif todo.is_overdue or todo.is_due_soon %}
+                                    {% if todo.is_overdue %}
+                                        OVERDUE
+                                    {% else %}
+                                        DUE_SOON
+                                    {% endif %}
+                                {% endif %}
                             </div>
 
                             <div class="flex grow flex-col gap-y-2">
@@ -89,7 +97,7 @@
                         <div class="text-center">Actions</div>
 
 
-                        <div class="col-span-12 ml-16 mt-2">
+                        {% comment %} <div class="col-span-12 ml-16 mt-2">
                             <div class="grid grid-cols-6 text-sm">
                                 <div class="font-semibold flex">
                                     <span class="material-symbols-rounded mr-1 text-sm">arrow_forward_ios</span>
@@ -97,81 +105,10 @@
                                 </div>
                                 <div class="col-span-5">TEXT TEXT TEXT</div>
                             </div>
-                        </div>
+                        </div> {% endcomment %}
                     </div>
                 {% endfor %}
             </div>
-
-            
-        
-
-
-
-
-            {% comment %} <table class="table table-zebra">
-                <thead>
-                    <tr>
-                        <th class="text-center">ID</th>
-                        <th>Todo</th>
-                        <th class="text-center">Priority</th>
-                        <th class="text-center">Projects</th>
-                        <th class="text-center">Contexts</th>
-                        <th class="text-center">Due Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for todo in todos %}
-                        <tr class="hover">
-                            <td class="text-center">{{ todo.id }}</td>
-                            <td>DESCRIPTION SHIT</td>
-                            <td class="text-center">
-                                {% if todo.priority is None or todo.priority == "" %}
-                                    -
-                                {% else %}
-                                    {% if todo.priority == "A" %}
-                                        <div class="badge badge-error">high</div>
-                                    {% elif todo.priority == "B" %}
-                                        <div class="badge badge-warning">medium</div>
-                                    {% elif todo.priority == "C" %}
-                                        <div class="badge badge-success">low</div>
-                                    {% else %}
-                                        <div class="badge badge-info">very low</div>
-                                    {% endif %}
-                                {% endif %}
-                            </td>
-                            <td class="text-center">
-                                {% if todo.projects.all.count == 0 %}
-                                    -
-                                {% else %}
-                                    <div class="flex gap-x-2 items-center justify-center">
-                                        {% for project in todo.projects.all %}
-                                            <div class="badge badge-primary">{{ project.name }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </td>
-                            <td class="text-center">
-                                {% if todo.contexts.all.count == 0 %}
-                                    -
-                                {% else %}
-                                    <div class="flex gap-x-2 items-center justify-center">
-                                        {% for context in todo.contexts.all %}
-                                            <div class="badge badge-secondary">{{ context.name }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </td>
-                            <td class="text-center">{{ todo.due_date|naturalday:"D d b Y"|capfirst }}</td>
-                            <td>
-                                BUTTON
-                                BUTTON
-                                BUTTON
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table> {% endcomment %}
         {% endif %}
     </div>
 {% endblock %}

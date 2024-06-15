@@ -55,16 +55,16 @@ class TodoTestCase(TestCase):
         self.assertIsNone(self.todo_with_start.due_date)
 
     def testNotOverdue(self):
-        self.assertFalse(self.todo_with_due.overdue)
+        self.assertFalse(self.todo_with_due.is_overdue)
 
     def testOverdue(self):
-        self.assertTrue(self.todo_overdue.overdue)
+        self.assertTrue(self.todo_overdue.is_overdue)
 
     def testDueToday(self):
-        self.assertFalse(self.todo_due_today.overdue)
+        self.assertFalse(self.todo_due_today.is_overdue)
 
     def testDueMoreThan3Days(self):
-        self.assertFalse(self.todo_with_due.due_soon)
+        self.assertFalse(self.todo_with_due.is_due_soon)
 
     def testDueLessThan3Days(self):
-        self.assertTrue(self.todo_due_next_3_days.due_soon)
+        self.assertTrue(self.todo_due_next_3_days.is_due_soon)
