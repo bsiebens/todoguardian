@@ -1,6 +1,7 @@
 import string
 from datetime import date
 
+from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils import text, timezone
 
@@ -68,6 +69,16 @@ class Todo(models.Model):
             return difference.days
 
         return 0
+
+    @property
+    def overdue(self) -> bool:
+        """Returns True if a todo is past due"""
+        return timezone.localdate() > self.due_date
+
+    @property
+    def due_soon(self) -> bool:
+        """Returns true if a todo is due in the next 3 days"""
+        return timezone.localdate() + relativedelta(days=3) > self.due_date
 
     def save(self, *args, **kwargs):
         self._completed = self.completion_date is not None

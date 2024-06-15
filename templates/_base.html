@@ -10,8 +10,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ToDoGuardian</title>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-
 
     {% compress css %}
         <link rel="stylesheet" href="{% static 'src/output.css' %}">
@@ -42,12 +40,14 @@
         </div>
     </div>
         
-    <div class="container mx-auto my-4 bg-base-100 rounded border border-base-300 p-2">
-        <div class="bg-yellow-300">ACTIONS</div>
-        
-        <div>
-            {% block content %}CONTENT{% endblock %}
-        </div>
+    <div class="m-16 mb-0 grid grid-cols-2">
+        <div>TABS</div>
+
+        <div class="self-center justify-self-end">BUTTON</div>
+    </div>
+
+    <div class="m-8 mt-0 flex flex-col gap-y-1">
+        {% block content %}CONTENT{% endblock %}
     </div>
 
     <footer class="footer footer-center p-4 bg-base-200 text-base-content border-t border-b border-base-300">

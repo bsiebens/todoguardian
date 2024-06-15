@@ -14,6 +14,9 @@ class TodoTestCase(TestCase):
         self.todo_with_start = Todo.objects.create(description="Todo with due date", start_date=timezone.localdate() + relativedelta(days=1))
         self.recurring_todo = Todo.objects.create(description="Recurring Todo", recurrence="1w")
         self.strict_recurring_todo = Todo.objects.create(description="Strict Recurring Todo", recurrence="+1w")
+        self.todo_overdue = Todo.objects.create(description="Todo overdue", due_date=timezone.localdate() + relativedelta(days=-1))
+        self.todo_due_today = Todo.objects.create(description="Todo due today", due_date=timezone.localdate())
+        self.todo_due_next_3_days = Todo.objects.create(description="Todo due next 3 days", due_date=timezone.localdate() + relativedelta(days=2))
 
     def testNotCompleted(self):
         self.assertFalse(self.bare_todo._completed)
@@ -50,3 +53,18 @@ class TodoTestCase(TestCase):
         self.todo_with_start.postpone("5d")
         self.assertEqual(self.todo_with_start.start_date, timezone.localdate() + relativedelta(days=6))
         self.assertIsNone(self.todo_with_start.due_date)
+
+    def testNotOverdue(self):
+        self.assertFalse(self.todo_with_due.overdue)
+
+    def testOverdue(self):
+        self.assertTrue(self.todo_overdue.overdue)
+
+    def testDueToday(self):
+        self.assertFalse(self.todo_due_today.overdue)
+
+    def testDueMoreThan3Days(self):
+        self.assertFalse(self.todo_with_due.due_soon)
+
+    def testDueLessThan3Days(self):
+        self.assertTrue(self.todo_due_next_3_days.due_soon)
