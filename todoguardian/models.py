@@ -3,11 +3,11 @@ from datetime import date
 
 from django.db import models
 from django.utils import text, timezone
+from pytodotxt import Task
 
+from .exceptions import NoRecurrenceException
 from .functions.date import to_date
 from .functions.recurrence import advance_todo
-from .exceptions import NoRecurrenceException
-from pytodotxt import Task
 
 
 class Todo(models.Model):
@@ -93,4 +93,21 @@ class Todo(models.Model):
     @classmethod
     def from_string(cls, string: str) -> "Todo":
         """Converts a todo.txt compliant string into a new object"""
-        ...
+        task = Task(string)
+        todo = Todo.objects.create(description=task.bare_description, priority=task.priority, completion_date=task.completion_date)
+
+        for attribute, values in task.attributes.items():
+            match attribute:
+                case "due":
+                    todo.due_date = values[0]
+
+                case "rec":
+                    todo.recurrence = values[0]
+
+                case "t" | "start":
+                    todo.start_date = values[0]
+
+                case _:
+                    continue
+
+        return todo
