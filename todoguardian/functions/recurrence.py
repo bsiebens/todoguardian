@@ -2,9 +2,12 @@ from datetime import date
 
 from dateutil.relativedelta import relativedelta
 
-from ..exceptions import NoRecurrenceException
 from ..models import Todo
 from .date import to_date
+
+
+class NoRecurrenceException(Exception):
+    pass
 
 
 def advance_todo(todo: Todo, offset: date | None = None, save: bool = True) -> Todo:
