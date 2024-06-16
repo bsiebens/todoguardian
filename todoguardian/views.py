@@ -1,10 +1,26 @@
-from django.shortcuts import redirect, render
 from django.contrib import messages
+from django.db.models import F, Value
+from django.db.models.fields import DateField
+from django.db.models.functions import Coalesce
+from django.shortcuts import redirect, render
+
 from .models import Todo
 
 
 def index(request):
-    todos = Todo.objects.all().order_by("-_completed", "due_date", "start_date", "priority").prefetch_related("projects", "contexts")
+    todos = (
+        Todo.objects.annotate(
+            due_date_value=Coalesce("due_date", Value("9999-12-31"), output_field=DateField()),
+            start_date_value=Coalesce("start_date", Value("9999-12-31"), output_field=DateField()),
+        )
+        .order_by(
+            F("_completed"),
+            "due_date_value",
+            "start_date_value",
+            "priority",
+        )
+        .prefetch_related("projects", "contexts")
+    )
 
     return render(request, "index.html", {"todos": todos})
 
