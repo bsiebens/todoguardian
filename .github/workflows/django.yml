@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  DJANGO_DEBUG: "True"
+  DJANGO_ALLOWED_HOSTS: "localhost"
+  DJANGO_CSRF_TRUSTED_ORIGINS: ""
+
 jobs:
   build:
 
