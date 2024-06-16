@@ -199,3 +199,20 @@ class Todo(models.Model):
         todo.update_from_string(string)
 
         return todo
+
+
+class Annotation(models.Model):
+    """An annotation can be used to keep track of changes/statuses and notes for a given todo"""
+
+    todo = models.ForeignKey(Todo, on_delete=models.CASCADE)
+    text = models.TextField()
+
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "Annotation for todo {i.todo.id}".format(i=self)
+
+    class Meta:
+        get_latest_by = ["created"]
+        ordering = ["-created"]
