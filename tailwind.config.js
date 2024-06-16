@@ -6,12 +6,16 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    fontFamily: {
+      "sans": ["Noto Sans"],
+    }
   },
   plugins: [
+    require('@tailwindcss/typography'),
     require("daisyui"),
   ],
   daisyui: {
-    themes: ["nord"],
+    themes: ["emerald", "night"],
   },
 }
 

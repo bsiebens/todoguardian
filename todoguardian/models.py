@@ -1,8 +1,10 @@
 import string
 from datetime import date
 
+from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils import text, timezone
+from pytodotxt import Task
 
 from .functions.date import to_date
 
@@ -38,7 +40,7 @@ class Todo(models.Model):
     priority = models.CharField(max_length=1, choices={i: i for i in string.ascii_uppercase}, blank=True)
     recurrence = models.CharField(max_length=5, blank=True, help_text="Recurrence can be defined as a string ([0-9][bdwmy]), add + in front to have strict recurrence.")
 
-    start_date = models.DateField(blank=True, null=True)
+    start_date = models.DateField(default=timezone.localdate)
     due_date = models.DateField(blank=True, null=True)
     completion_date = models.DateField(blank=True, null=True)
     _completed = models.BooleanField("completed?", default=False)
@@ -68,6 +70,26 @@ class Todo(models.Model):
             return difference.days
 
         return 0
+
+    @property
+    def is_overdue(self) -> bool:
+        """Returns True if a todo is past due"""
+        if self.due_date is not None:
+            return timezone.localdate() > self.due_date
+
+        return False
+
+    @property
+    def is_due_soon(self) -> bool:
+        """Returns true if a todo is due in the next 3 days"""
+        if self.due_date is not None:
+            return timezone.localdate() + relativedelta(days=3) > self.due_date and timezone.localdate() <= self.due_date
+
+        return False
+
+    @property
+    def is_completed(self) -> bool:
+        return self.completion_date is not None
 
     def save(self, *args, **kwargs):
         self._completed = self.completion_date is not None
@@ -101,11 +123,79 @@ class Todo(models.Model):
 
     def to_string(self) -> str:
         """Returns a todo.txt compliant string"""
-        ...
+        task = Task(self.description)
+
+        task.priority = self.priority
+        task.is_completed = self.is_completed
+        task.creation_date = self.created.date()
+
+        if self.due_date is not None:
+            task.add_attribute("due", self.due_date.isoformat())
+
+        if self.start_date is not None:
+            task.add_attribute("t", self.start_date.isoformat())
+
+        if self.recurrence is not None and self.recurrence != "":
+            task.add_attribute("rec", self.recurrence)
+
+        for project in self.projects.all():
+            task.add_project(project.name)
+
+        for context in self.contexts.all():
+            task.add_context(context.name)
+
+        return str(task)
 
     to_string.short_description = "Todo.txt string"
+
+    def update_from_string(self, string: str) -> None:
+        """Updates the todo based on the information from the todo.txt string passed in."""
+        task = Task(string)
+
+        all_projects = {project.name: project for project in Project.objects.all()}
+        all_contexts = {context.name: context for context in Context.objects.all()}
+
+        self.description = task.bare_description()
+        self.priority = task.priority
+        self.completion_date = task.completion_date
+
+        for attribute_key, attribute_values in task.attributes.items():
+            match attribute_key:
+                case "due":
+                    self.due_date = to_date(attribute_values[0])
+
+                case "rec":
+                    self.recurrence = attribute_values[0]
+
+                case "t" | "start":
+                    self.start_date = to_date(attribute_values[0])
+
+                case _:
+                    continue
+
+        self.save()
+
+        self.projects.clear()
+        self.contexts.clear()
+
+        for project in task.projects:
+            if project in all_projects.keys():
+                self.projects.add(all_projects[project])
+
+            else:
+                self.projects.create(name=project)
+
+        for context in task.contexts:
+            if context in all_contexts.keys():
+                self.contexts.add(all_contexts[context])
+
+            else:
+                self.contexts.create(name=context)
 
     @classmethod
     def from_string(cls, string: str) -> "Todo":
         """Converts a todo.txt compliant string into a new object"""
-        ...
+        todo = Todo.objects.create(description="New todo from string")
+        todo.update_from_string(string)
+
+        return todo

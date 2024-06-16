@@ -2,6 +2,7 @@ import re
 from datetime import date
 
 from dateutil.relativedelta import FR, MO, SA, SU, TH, TU, WE, relativedelta
+from dateutil import parser
 from django.utils import timezone
 
 
@@ -49,7 +50,13 @@ def to_date(pattern: str, offset: date | None = None) -> date | None:
     elif re.match("yes(terday)?$", pattern):
         return _calculate_date_from_pattern(-1, "d")
 
-    return None
+    else:
+        # Maybe it's a string we can convert directly into a date?
+        try:
+            return parser.parse(pattern).date()
+
+        except parser.ParserError:
+            return None
 
 
 def _calculate_date_from_pattern(length: int | str, period: str, offset: date | None = None) -> date | None:

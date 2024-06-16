@@ -100,5 +100,5 @@ class TodoTestCase(TestCase):
         self.assertRaises(NoRecurrenceException, advance_todo, todo)
 
     def testInvalidRecurrence(self):
-        todo = Todo.objects.create(description="Test description", recurrence="1h")
+        todo = Todo.objects.create(description="Test description", recurrence="1f")
         self.assertRaises(NoRecurrenceException, advance_todo, todo)

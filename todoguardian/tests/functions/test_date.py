@@ -17,6 +17,12 @@ class ToDateTestCase(TestCase):
         self.monday = date(2024, 6, 10)
         self.friday = date(2024, 6, 14)
 
+    def testString(self):
+        self.assertEqual(to_date("2024-06-07"), self.today)
+        self.assertEqual(to_date("06/07/2024"), self.today)
+        self.assertEqual(to_date("06-07-2024"), self.today)
+        self.assertEqual(to_date(self.today.isoformat()), self.today)
+
     def testZeroDay(self):
         self.assertEqual(to_date("0d"), self.today)
 

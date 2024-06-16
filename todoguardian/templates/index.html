@@ -1,5 +1,205 @@
 {% extends "_base.html" %}
+{% load humanize %}
 
 {% block content %}
-    CONTENT
+    <div class="">
+        {% if todos.count == 0 %}
+            <div class="prose">
+                <h3 class="prose-h3">No to-dos found</h3>
+            </div>
+        {% else %}
+            <div class="grid grid-cols-12 items-center bg-base-100 border-b border-base-content p-2 mb-2 text-base-content font-medium text-sm">
+                <div class="col-span-7">Todo</div>
+                <div class="text-center">Priority</div>
+                <div class="text-center">Projects</div>
+                <div class="text-center">Due Date</div>
+                <div class="col-span-2 text-center">Actions</div>
+            </div>
+
+            <div class="flex flex-col divide-y">
+                {% for todo in todos %}
+                    <div class="grid grid-cols-12 items-center p-2 hover:bg-base-300 rounded rounded-md">
+                        <div class="col-span-7 grid grid-cols-12 items-center gap-x-2">
+                            <div>
+                                {% if todo.is_completed %}
+                                    <span class="material-symbols-rounded text-success">check</span>
+                                {% elif todo.is_due_soon %}
+                                    <span class="material-symbols-rounded text-warning">warning</span>
+                                {% elif todo.is_overdue %}
+                                    <span class="material-symbols-rounded text-error">emergency_home</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-span-11 flex flex-col gap-y-2">
+                                <div class="flex font-semibold text-lg
+                                    {% if not todo.is_completed %}
+                                        {% if todo.is_due_soon %}
+                                            text-warning
+                                        {% elif todo.is_overdue %}
+                                            text-error
+                                        {% endif %}
+                                    {% endif %}
+                                ">
+                                    {{ todo.description }}
+                                </div>
+                                <div class="flex flex-row gap-x-2">
+                                    <div>
+                                        <div class="badge badge-secondary">
+                                            <span class="material-symbols-rounded mr-1 text-sm">not_started</span>
+                                            {{ todo.start_date|naturalday:"D d.m.y"|capfirst }}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        {% if todo.recurrence is not None and todo.recurrence != "" %}
+                                            <div class="badge badge-secondary">
+                                                <span class="material-symbols-rounded mr-1 text-sm">repeat</span>
+                                                {{ todo.recurrence }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div>
+                                        {% if todo.contexts.all.count > 0 %}
+                                            <div class="flex gap-x-1">
+                                                {% for context in todo.contexts.all %}
+                                                    <div class="badge badge-primary">
+                                                        <span class="material-symbols-rounded mr-1 text-sm">alternate_email</span>    
+                                                        {{ context.name }}
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="justify-self-center self-center">
+                            {% if todo.priority is None or todo.priority == "" %}
+                                -
+                            {% else %}
+                                {% if todo.priority == "A" %}
+                                    <div class="badge badge-accent">high (A)</div>
+                                {% elif todo.priority == "B" %}
+                                    <div class="badge badge-primary">medium (B)</div>
+                                {% elif todo.priority == "C" %}
+                                    <div class="badge badge-secondary">low (C)</div>
+                                {% else %}
+                                    <div class="badge badge-info">very low ({{ todo.priority|capfirst }})</div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <div class="justify-self-center self-center text-center">
+                            {% if todo.projects.all.count == 0 %}
+                                -
+                            {% else %}
+                                {% for project in todo.projects.all %}
+                                    <div class="badge badge-primary">
+                                        <span class="material-symbols-rounded mr-1 text-sm">assignment</span> 
+                                        {{ project.name }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="text-center">{{ todo.due_date|naturalday:"D d.m.y"|capfirst }}</div>
+
+                        <div class="col-span-2 flex flex-row gap-x-1 justify-center">
+                            <form method="post" action="{% url "todoguardian:complete" %}">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ todo.id }}" name="completeTodo" />
+                                <div class="tooltip" data-tip="Mark {% if todo.is_completed %}not {% endif %}completed">
+                                    <button class="btn btn-square btn-sm hover:btn-success">
+                                        {% if todo.is_completed %}
+                                            <span class="material-symbols-rounded">undo</span>
+                                        {% else %}
+                                            <span class="material-symbols-rounded">check</span>
+                                        {% endif %}
+                                    </button>
+                                </div>
+                            </form>
+
+                            {% if not todo.is_completed %}
+                                <div class="tooltip" data-tip="Edit">
+                                    <button class="btn btn-square btn-sm hover:btn-info" onclick="edit_modal_{{ todo.id }}.showModal()">
+                                        <span class="material-symbols-rounded">edit</span>
+                                    </button>
+                                    <dialog id="edit_modal_{{ todo.id }}" class="modal">
+                                        <div class="modal-box w-10/12 max-w-5xl">
+                                            <form method="post" id="edit_form_{{ todo.id }}" action="{% url "todoguardian:edit" %}" class="p-2 flex flex-row gap-x-2">
+                                                {% csrf_token %}
+                                                <input type="hidden" value="{{ todo.id }}" name="editTodoID" />
+                                                <input name="editTodoString" type="text" class="input input-bordered w-full" value="{{ todo.to_string }}" placeholder="Edit todo">
+                                                <button class="btn hover:btn-info" type="submit" form="edit_form_{{ todo.id }}">
+                                                    <span class="material-symbols-rounded">edit</span>
+                                                    Edit
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <form method="dialog" class="modal-backdrop">
+                                            <button>close</button>
+                                        </form>
+                                    </dialog>
+                                </div>
+
+                                <div class="tooltip" data-tip="Postpone">
+                                    <button class="btn btn-square btn-sm hover:btn-info" onclick="postpone_modal_{{ todo.id }}.showModal()">
+                                        <span class="material-symbols-rounded">update</span>
+                                    </button>
+                                    <dialog id="postpone_modal_{{ todo.id }}" class="modal">
+                                        <div class="modal-box">
+                                            <form method="post" id="postpone_form_{{ todo.id }}" action="{% url "todoguardian:postpone" %}" class="p-2 flex flex-row gap-x-2">
+                                                {% csrf_token %}
+                                                <input type="hidden" value="{{ todo.id }}" name="postponeTodoID" />
+                                                <input name="postponeTodoPattern" type="text" class="input input-bordered w-full" placeholder="Postpone pattern (e.g., 1d, 1w, ...)">
+                                                <button class="btn hover:btn-info" type="submit" form="postpone_form_{{ todo.id }}">
+                                                    <span class="material-symbols-rounded">update</span>
+                                                    Postpone
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <form method="dialog" class="modal-backdrop">
+                                            <button>close</button>
+                                        </form>
+                                    </dialog>
+                                </div>
+
+                                {% comment %} <form method="post" action="{% url "todoguardian:complete" %}">
+                                    {% csrf_token %}
+                                    <div class="tooltip" data-tip="Add note">
+                                        <button class="btn btn-square btn-sm hover:btn-secondary">
+                                            <span class="material-symbols-rounded">playlist_add</span>
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <form method="post" action="{% url "todoguardian:complete" %}">
+                                    {% csrf_token %}
+                                    <div class="tooltip" data-tip="Delete">
+                                        <button class="btn btn-square btn-sm hover:btn-error">
+                                            <span class="material-symbols-rounded">delete</span>
+                                        </button>
+                                    </div>
+                                </form> {% endcomment %}
+                            {% endif %}
+                        </div>
+
+                        {% comment %} <div class="col-span-12 ml-16 mt-2">
+                            <div class="grid grid-cols-6 text-sm">
+                                <div class="font-semibold flex">
+                                    <span class="material-symbols-rounded mr-1 text-sm">arrow_forward_ios</span>
+                                    DATE
+                                </div>
+                                <div class="col-span-5">TEXT TEXT TEXT</div>
+                            </div>
+                        </div> {% endcomment %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
