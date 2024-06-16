@@ -2489,8 +2489,12 @@ html{
   grid-column: span 7 / span 7;
 }
 
-.col-start-2{
-  grid-column-start: 2;
+.col-span-9{
+  grid-column: span 9 / span 9;
+}
+
+.col-span-8{
+  grid-column: span 8 / span 8;
 }
 
 .m-4{
@@ -2534,18 +2538,6 @@ html{
 
 .mt-2{
   margin-top: 0.5rem;
-}
-
-.ml-8{
-  margin-left: 2rem;
-}
-
-.ml-12{
-  margin-left: 3rem;
-}
-
-.ml-10{
-  margin-left: 2.5rem;
 }
 
 .block{
@@ -2592,6 +2584,10 @@ html{
   flex-grow: 1;
 }
 
+.grid-cols-10{
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+}
+
 .grid-cols-12{
   grid-template-columns: repeat(12, minmax(0, 1fr));
 }
@@ -2602,6 +2598,10 @@ html{
 
 .grid-cols-6{
   grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.grid-cols-9{
+  grid-template-columns: repeat(9, minmax(0, 1fr));
 }
 
 .flex-row{
@@ -2644,10 +2644,6 @@ html{
 
 .gap-y-2{
   row-gap: 0.5rem;
-}
-
-.gap-y-4{
-  row-gap: 1rem;
 }
 
 .divide-y > :not([hidden]) ~ :not([hidden]){
@@ -2788,30 +2784,6 @@ html{
 }
 
 @media (hover: hover){
-  .hover\:btn-secondary:hover.btn-outline:hover{
-    --tw-text-opacity: 1;
-    color: var(--fallback-sc,oklch(var(--sc)/var(--tw-text-opacity)));
-  }
-
-  @supports (color: color-mix(in oklab, black, black)){
-    .hover\:btn-secondary:hover.btn-outline:hover{
-      background-color: color-mix(in oklab, var(--fallback-s,oklch(var(--s)/1)) 90%, black);
-      border-color: color-mix(in oklab, var(--fallback-s,oklch(var(--s)/1)) 90%, black);
-    }
-  }
-
-  .hover\:btn-secondary:hover.btn-outline:hover{
-    --tw-text-opacity: 1;
-    color: var(--fallback-sc,oklch(var(--sc)/var(--tw-text-opacity)));
-  }
-
-  @supports (color: color-mix(in oklab, black, black)){
-    .hover\:btn-secondary:hover.btn-outline:hover{
-      background-color: color-mix(in oklab, var(--fallback-s,oklch(var(--s)/1)) 90%, black);
-      border-color: color-mix(in oklab, var(--fallback-s,oklch(var(--s)/1)) 90%, black);
-    }
-  }
-
   .hover\:btn-success:hover.btn-outline:hover{
     --tw-text-opacity: 1;
     color: var(--fallback-suc,oklch(var(--suc)/var(--tw-text-opacity)));
@@ -2886,10 +2858,6 @@ html{
 }
 
 @supports not (color: oklch(0% 0 0)){
-  .hover\:btn-secondary:hover{
-    --btn-color: var(--fallback-s);
-  }
-
   .hover\:btn-info:hover{
     --btn-color: var(--fallback-in);
   }
@@ -2904,11 +2872,6 @@ html{
 }
 
 @supports (color: color-mix(in oklab, black, black)){
-  .hover\:btn-secondary:hover.btn-outline.btn-active{
-    background-color: color-mix(in oklab, var(--fallback-s,oklch(var(--s)/1)) 90%, black);
-    border-color: color-mix(in oklab, var(--fallback-s,oklch(var(--s)/1)) 90%, black);
-  }
-
   .hover\:btn-success:hover.btn-outline.btn-active{
     background-color: color-mix(in oklab, var(--fallback-su,oklch(var(--su)/1)) 90%, black);
     border-color: color-mix(in oklab, var(--fallback-su,oklch(var(--su)/1)) 90%, black);
@@ -2926,10 +2889,6 @@ html{
 }
 
 @supports (color: oklch(0% 0 0)){
-  .hover\:btn-secondary:hover{
-    --btn-color: var(--s);
-  }
-
   .hover\:btn-info:hover{
     --btn-color: var(--in);
   }
@@ -2941,12 +2900,6 @@ html{
   .hover\:btn-error:hover{
     --btn-color: var(--er);
   }
-}
-
-.hover\:btn-secondary:hover{
-  --tw-text-opacity: 1;
-  color: var(--fallback-sc,oklch(var(--sc)/var(--tw-text-opacity)));
-  outline-color: var(--fallback-s,oklch(var(--s)/1));
 }
 
 .hover\:btn-info:hover{
@@ -2965,16 +2918,6 @@ html{
   --tw-text-opacity: 1;
   color: var(--fallback-erc,oklch(var(--erc)/var(--tw-text-opacity)));
   outline-color: var(--fallback-er,oklch(var(--er)/1));
-}
-
-.hover\:btn-secondary:hover.btn-outline{
-  --tw-text-opacity: 1;
-  color: var(--fallback-s,oklch(var(--s)/var(--tw-text-opacity)));
-}
-
-.hover\:btn-secondary:hover.btn-outline.btn-active{
-  --tw-text-opacity: 1;
-  color: var(--fallback-sc,oklch(var(--sc)/var(--tw-text-opacity)));
 }
 
 .hover\:btn-success:hover.btn-outline{
