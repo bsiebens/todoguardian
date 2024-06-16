@@ -2436,6 +2436,10 @@ html{
   grid-column: span 7 / span 7;
 }
 
+.col-start-2{
+  grid-column-start: 2;
+}
+
 .m-4{
   margin: 1rem;
 }
@@ -2477,6 +2481,18 @@ html{
 
 .mt-2{
   margin-top: 0.5rem;
+}
+
+.ml-8{
+  margin-left: 2rem;
+}
+
+.ml-12{
+  margin-left: 3rem;
+}
+
+.ml-10{
+  margin-left: 2.5rem;
 }
 
 .block{
@@ -2547,6 +2563,10 @@ html{
   align-items: center;
 }
 
+.justify-end{
+  justify-content: flex-end;
+}
+
 .justify-center{
   justify-content: center;
 }
@@ -2571,6 +2591,10 @@ html{
 
 .gap-y-2{
   row-gap: 0.5rem;
+}
+
+.gap-y-4{
+  row-gap: 1rem;
 }
 
 .divide-y > :not([hidden]) ~ :not([hidden]){
@@ -2649,6 +2673,10 @@ html{
   padding-bottom: 1rem;
 }
 
+.pr-4{
+  padding-right: 1rem;
+}
+
 .text-center{
   text-align: center;
 }
@@ -2666,6 +2694,11 @@ html{
 .text-xl{
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.text-xs{
+  font-size: 0.75rem;
+  line-height: 1rem;
 }
 
 .font-medium{

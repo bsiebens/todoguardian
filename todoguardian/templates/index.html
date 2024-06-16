@@ -172,7 +172,7 @@
                                     {% csrf_token %}
                                     <div class="tooltip" data-tip="Add note">
                                         <button class="btn btn-square btn-sm hover:btn-secondary">
-                                            <span class="material-symbols-rounded">playlist_add</span>
+                                            <span class="material-symbols-rounded">add_notes</span>
                                         </button>
                                     </div>
                                 </form>
@@ -188,6 +188,19 @@
                             {% endif %}
                         </div>
 
+                        {% if todo.annotations.count > 0 %}
+                            <div class="col-span-12 mt-2">
+                                {% for annotation in todo.annotations.all %}
+                                    <div class="grid grid-cols-6 text-xs {% if not forloop.last %}mb-2{% endif %}">
+                                        <div class="font-semibold flex justify-end items-center pr-4">
+                                            <span class="material-symbols-rounded mr-1 text-sm">notes</span>
+                                            {{ annotation.created|naturaltime }}
+                                        </div>
+                                        <div class="col-span-5">{{ annotation.text }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                         {% comment %} <div class="col-span-12 ml-16 mt-2">
                             <div class="grid grid-cols-6 text-sm">
                                 <div class="font-semibold flex">
