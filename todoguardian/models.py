@@ -4,8 +4,11 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils import text, timezone
+from pytodotxt import Task
 
+from .exceptions import NoRecurrenceException
 from .functions.date import to_date
+from .functions.recurrence import advance_todo
 
 
 class Project(models.Model):
@@ -116,11 +119,43 @@ class Todo(models.Model):
 
     def to_string(self) -> str:
         """Returns a todo.txt compliant string"""
-        ...
+        task = Task(self.description)
+
+        task.priority = self.priority
+        task.is_completed = self.is_completed
+        task.creation_date = self.created.date()
+
+        if self.due_date is not None:
+            task.add_attribute("due", self.due_date.isoformat())
+
+        if self.start_date is not None:
+            task.add_attribute("t", self.start_date.isoformat())
+
+        if self.recurrence is not None and self.recurrence != "":
+            task.add_attribute("rec", self.recurrence)
+
+        return str(task)
 
     to_string.short_description = "Todo.txt string"
 
     @classmethod
     def from_string(cls, string: str) -> "Todo":
         """Converts a todo.txt compliant string into a new object"""
-        ...
+        task = Task(string)
+        todo = Todo.objects.create(description=task.bare_description, priority=task.priority, completion_date=task.completion_date)
+
+        for attribute, values in task.attributes.items():
+            match attribute:
+                case "due":
+                    todo.due_date = values[0]
+
+                case "rec":
+                    todo.recurrence = values[0]
+
+                case "t" | "start":
+                    todo.start_date = values[0]
+
+                case _:
+                    continue
+
+        return todo
