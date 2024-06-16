@@ -168,7 +168,7 @@
                                     </dialog>
                                 </div>
 
-                                <form method="post" action="{% url "todoguardian:complete" %}">
+                                {% comment %} <form method="post" action="{% url "todoguardian:complete" %}">
                                     {% csrf_token %}
                                     <div class="tooltip" data-tip="Add note">
                                         <button class="btn btn-square btn-sm hover:btn-secondary">
@@ -184,7 +184,7 @@
                                             <span class="material-symbols-rounded">delete</span>
                                         </button>
                                     </div>
-                                </form>
+                                </form> {% endcomment %}
                             {% endif %}
                         </div>
 
