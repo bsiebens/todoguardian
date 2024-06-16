@@ -1,6 +1,7 @@
 import string
 from datetime import date
 
+from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.utils import text, timezone
 from pytodotxt import Task
@@ -10,16 +11,44 @@ from .functions.date import to_date
 from .functions.recurrence import advance_todo
 
 
+class Project(models.Model):
+    """A project can be any type of collection of todos"""
+
+    name = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+
+
+class Context(models.Model):
+    """A context can be any type of similar todos or related todos"""
+
+    name = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+
+
 class Todo(models.Model):
     """This class contains common fields for storing todos"""
 
     description = models.TextField()
     priority = models.CharField(max_length=1, choices={i: i for i in string.ascii_uppercase}, blank=True)
-    recurrence = models.CharField(max_length=5, blank=True, null=True)
+    recurrence = models.CharField(max_length=5, blank=True, help_text="Recurrence can be defined as a string ([0-9][bdwmy]), add + in front to have strict recurrence.")
 
-    start_date = models.DateField(blank=True, null=True)
+    start_date = models.DateField(default=timezone.localdate)
     due_date = models.DateField(blank=True, null=True)
     completion_date = models.DateField(blank=True, null=True)
+    _completed = models.BooleanField("completed?", default=False)
+
+    projects = models.ManyToManyField(Project, blank=True, related_name="todos")
+    contexts = models.ManyToManyField(Context, blank=True, related_name="todos")
 
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -33,10 +62,6 @@ class Todo(models.Model):
         return text.Truncator(self.description).words(20)
 
     @property
-    def is_completed(self) -> bool:
-        return self.completion_date is not None
-
-    @property
     def length(self) -> int:
         """Returns the length (of days) between start and due date."""
         start = self.start_date or self.created.date()
@@ -48,12 +73,33 @@ class Todo(models.Model):
 
         return 0
 
+    @property
+    def is_overdue(self) -> bool:
+        """Returns True if a todo is past due"""
+        return timezone.localdate() > self.due_date
+
+    @property
+    def is_due_soon(self) -> bool:
+        """Returns true if a todo is due in the next 3 days"""
+        return timezone.localdate() + relativedelta(days=3) > self.due_date and timezone.localdate() <= self.due_date
+
+    @property
+    def is_completed(self) -> bool:
+        return self.completion_date is not None
+
     def save(self, *args, **kwargs):
+        self._completed = self.completion_date is not None
+
         super(Todo, self).save(*args, **kwargs)
 
-    def complete(self, completion_date: date = timezone.localdate()) -> None:
-        """ "Marks a todo as completed, using the supplied completion_date (default: today)"""
+    def mark_complete(self, completion_date: date = timezone.localdate()) -> None:
+        """Marks a todo as completed, using the supplied completion_date (default: today)"""
         self.completion_date = completion_date
+        self.save()
+
+    def mark_not_complete(self) -> None:
+        """Marks a todo as not completed, removing any completion information."""
+        self.completion_date = None
         self.save()
 
     def postpone(self, pattern: str) -> None:
@@ -89,6 +135,8 @@ class Todo(models.Model):
             task.add_attribute("rec", self.recurrence)
 
         return str(task)
+
+    to_string.short_description = "Todo.txt string"
 
     @classmethod
     def from_string(cls, string: str) -> "Todo":

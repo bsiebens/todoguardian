@@ -1,7 +1,6 @@
 from datetime import date
 
 from dateutil.relativedelta import relativedelta
-from django.utils import timezone
 
 from ..exceptions import NoRecurrenceException
 from ..models import Todo

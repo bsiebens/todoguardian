@@ -12,21 +12,25 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+import environ
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+ENV = environ.Env(DJANGO_DEBUG=(bool, False))
 
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-f3q41v@-t4t)-&za3v^p6zh-k0ds9e#fldl0%l-kmlf_^!8@=m"
+SECRET_KEY = ENV("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = ENV("DJANGO_DEBUG")
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ENV.list("DJANGO_ALLOWED_HOSTS")
+CSRF_TRUSTED_ORIGINS = ENV.list("DJANGO_CSRF_TRUSTED_ORIGINS")
 
 # Application definition
 
@@ -37,6 +41,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
+    "compressor",
     "todoguardian",
 ]
 
@@ -55,7 +61,9 @@ ROOT_URLCONF = "todo.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            BASE_DIR / "templates",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -122,3 +130,11 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+COMPRESS_ROOT = BASE_DIR / "static"
+COMPRESS_ENABLED = True
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "compressor.finders.CompressorFinder",
+]

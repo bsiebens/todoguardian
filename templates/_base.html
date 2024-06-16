@@ -1,0 +1,74 @@
+{% load compress %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" data-theme="emerald">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDoGuardian</title>
+
+
+    {% compress css %}
+        <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    {% endcompress %}
+</head>
+
+<body>
+    <div class="navbar bg-base-200 border-b border-base-300 px-8 py-4">
+        <div class="flex-1">
+            <img src="{% static 'images/logo.png' %}" class="h-14 mx-2">
+            <a class="ml-4 font-semibold text-xl" href="/">ToDoGuardian</a>
+        </div>
+
+        <div class="flex-none">
+
+            <label class="swap swap-rotate mx-2">
+  
+                <!-- this hidden checkbox controls the state -->
+                <input type="checkbox" class="theme-controller" value="night" />
+                
+                <!-- sun icon -->
+                <span class="swap-off fill-current material-symbols-rounded">light_mode</span>
+                
+                <!-- moon icon -->
+                <span class="swap-on fill-current material-symbols-rounded">dark_mode</span>
+                
+              </label>
+        </div>
+    </div>
+
+    <div>
+        <form method="post" action="{% url "todoguardian:add" %}" id="add_form" class="m-16 mb-2 p-2 flex flex-row gap-x-2">
+            <label class="input input-bordered flex items-center gap-2 grow">
+                <input type="text" class="grow" placeholder="Add new todo">
+                <span class="material-symbols-rounded text-base-300" title="Now todos can be added using todo.txt format, supports natural language for days (e.g., (A) Create new todo due:today)">help</span>
+            </label>
+            {% comment %} <input type="text" placeholder="Add a new todo ..." class="input input-bordered w-full" /> {% endcomment %}
+            <button class="btn" type="submit" form="add_form">
+                <span class="material-symbols-rounded">add</span>
+                Add new todo
+            </button>
+        </form>
+    </div>
+        
+    <div class="mx-16 grid grid-cols-2">
+        <div>TABS</div>
+
+        <div class="self-center justify-self-end">BUTTON</div>
+    </div>
+    
+    <div class="m-8 mt-0 flex flex-col gap-y-1">
+        {% block content %}CONTENT{% endblock %}
+    </div>
+
+    <footer class="footer footer-center p-4 bg-base-200 text-base-content border-t border-b border-base-300">
+        <aside>
+            <p>Copyright &copy; {% now "Y" %} - ToDoGuardian was created by Bernard Siebens and distributed under MIT License</p>
+        </aside>
+    </footer>
+</body>
+
+</html>

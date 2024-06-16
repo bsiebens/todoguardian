@@ -1,8 +1,9 @@
-from django.test import TestCase
 from datetime import date
 
-from ...functions.date import to_date
+from django.test import TestCase
 from freezegun import freeze_time
+
+from ...functions.date import to_date
 
 
 @freeze_time("2024-06-07")
