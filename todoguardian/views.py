@@ -4,7 +4,9 @@ from django.db.models.fields import DateField
 from django.db.models.functions import Coalesce
 from django.shortcuts import redirect, render
 
+from .functions.recurrence import advance_todo
 from .models import Todo
+from .exceptions import NoRecurrenceException
 
 
 def index(request):
@@ -43,7 +45,14 @@ def complete(request):
 
         else:
             todo.mark_complete()
-            messages.success(request, "Todo '{description}' marked as completed".format(description=todo.description))
+
+            try:
+                advance_todo(todo)
+                messages.success(request, "Todo '{description}' marked as completed".format(description=todo.description))
+                messages.success(request, "New todo '{description}' created".format(description=todo.description))
+
+            except NoRecurrenceException:
+                messages.success(request, "Todo '{description}' marked as completed".format(description=todo.description))
 
     return redirect("todoguardian:index")
 
