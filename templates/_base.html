@@ -74,7 +74,9 @@
 
             <label class="input input-bordered flex items-center gap-2 grow">
                 <input name="addTodoFromString" type="text" class="grow" placeholder="Add new todo">
-                <span class="material-symbols-rounded text-base-300" title="Now todos can be added using todo.txt format, supports natural language for days (e.g., (A) Create new todo due:today)">help</span>
+                <div class="tooltip" data-tip="Use todo.txt format, natural days are supported (e.g., due:today)">
+                    <span class="material-symbols-rounded text-base-300">help</span>
+                </div>
             </label>
             <button class="btn" type="submit" form="add_form">
                 <span class="material-symbols-rounded">add</span>

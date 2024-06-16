@@ -138,3 +138,5 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     "compressor.finders.CompressorFinder",
 ]
+
+TEST_RUNNER = "teamcity.django.TeamcityDjangoRunner"

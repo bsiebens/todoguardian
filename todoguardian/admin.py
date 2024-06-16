@@ -8,7 +8,13 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ngettext
 
 from .functions.recurrence import NoRecurrenceException, advance_todo
-from .models import Context, Project, Todo
+from .models import Context, Project, Todo, Annotation
+
+
+class AnnotationInline(admin.TabularInline):
+    model = Annotation
+    fields = ["todo", "text"]
+    extra = 0
 
 
 @admin.register(Todo)
@@ -82,6 +88,7 @@ class TodoAdmin(admin.ModelAdmin):
         ["DATES", {"fields": [("due_date", "start_date"), "completion_date"]}],
         ["GENERAL INFORMATION", {"fields": [("created", "modified"), "to_string"]}],
     ]
+    inlines = [AnnotationInline]
 
 
 admin.site.register(Project)

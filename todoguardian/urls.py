@@ -9,4 +9,5 @@ urlpatterns = [
     path("complete/", views.complete, name="complete"),
     path("edit/", views.edit, name="edit"),
     path("postpone/", views.postpone, name="postpone"),
+    path("notes/", views.notes, name="notes"),
 ]
