@@ -1,14 +1,14 @@
 from typing import Any
+
 from django.contrib import admin, messages
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 from django.utils import timezone
-from django.utils.translation import ngettext
 from django.utils.safestring import mark_safe
+from django.utils.translation import ngettext
 
-from .models import Todo, Project, Context
-from .functions.recurrence import advance_todo
-from .exceptions import NoRecurrenceException
+from .functions.recurrence import NoRecurrenceException, advance_todo
+from .models import Context, Project, Todo
 
 
 @admin.register(Todo)
@@ -53,14 +53,14 @@ class TodoAdmin(admin.ModelAdmin):
         projects = [project.name for project in instance.projects.order_by("name")]
 
         return mark_safe("<br />".join(projects))
-    
+
     list_projects.short_description = "Projects"
-    
+
     def list_contexts(self, instance) -> str:
         contexts = [context.name for context in instance.contexts.order_by("name")]
 
         return mark_safe("<br />".join(contexts))
-    
+
     list_contexts.short_description = "Contexts"
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
