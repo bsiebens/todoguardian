@@ -6,9 +6,7 @@ from django.db import models
 from django.utils import text, timezone
 from pytodotxt import Task
 
-from .exceptions import NoRecurrenceException
 from .functions.date import to_date
-from .functions.recurrence import advance_todo
 
 
 class Project(models.Model):
