@@ -40,13 +40,42 @@
         </div>
     </div>
 
-    <div>
-        <form method="post" action="{% url "todoguardian:add" %}" id="add_form" class="m-16 mb-2 p-2 flex flex-row gap-x-2">
+    {% if messages %}
+        <div class="m-4 p-2 flex flex-col gap-y-2">      
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    <div role="alert" class="alert alert-success">
+                        <span class="material-symbols-rounded">check_circle</span>
+                        <span>{{ message }}</span>
+                    </div>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                    <div role="alert" class="alert alert-warning">
+                        <span class="material-symbols-rounded">cancel</span>
+                        <span>{{ message }}</span>
+                    </div>
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    <div role="alert" class="alert alert-error">
+                        <span class="material-symbols-rounded">error</span>
+                        <span>{{ message }}</span>
+                    </div>
+                {% else %}
+                    <div role="alert" class="alert alert-info">
+                        <span class="material-symbols-rounded">info</span>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="mx-16 my-2">
+        <form method="post" action="{% url "todoguardian:add" %}" id="add_form" class="p-2 flex flex-row gap-x-2">
+            {% csrf_token %}
+
             <label class="input input-bordered flex items-center gap-2 grow">
-                <input type="text" class="grow" placeholder="Add new todo">
+                <input name="addTodoFromString" type="text" class="grow" placeholder="Add new todo">
                 <span class="material-symbols-rounded text-base-300" title="Now todos can be added using todo.txt format, supports natural language for days (e.g., (A) Create new todo due:today)">help</span>
             </label>
-            {% comment %} <input type="text" placeholder="Add a new todo ..." class="input input-bordered w-full" /> {% endcomment %}
             <button class="btn" type="submit" form="add_form">
                 <span class="material-symbols-rounded">add</span>
                 Add new todo
@@ -54,13 +83,13 @@
         </form>
     </div>
         
-    <div class="mx-16 grid grid-cols-2">
+    <div class="mx-16 my-2 grid grid-cols-2">
         <div>TABS</div>
 
         <div class="self-center justify-self-end">BUTTON</div>
     </div>
     
-    <div class="m-8 mt-0 flex flex-col gap-y-1">
+    <div class="m-8 my-2 flex flex-col gap-y-1">
         {% block content %}CONTENT{% endblock %}
     </div>
 

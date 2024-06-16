@@ -74,12 +74,18 @@ class Todo(models.Model):
     @property
     def is_overdue(self) -> bool:
         """Returns True if a todo is past due"""
-        return timezone.localdate() > self.due_date
+        if self.due_date is not None:
+            return timezone.localdate() > self.due_date
+
+        return False
 
     @property
     def is_due_soon(self) -> bool:
         """Returns true if a todo is due in the next 3 days"""
-        return timezone.localdate() + relativedelta(days=3) > self.due_date and timezone.localdate() <= self.due_date
+        if self.due_date is not None:
+            return timezone.localdate() + relativedelta(days=3) > self.due_date and timezone.localdate() <= self.due_date
+
+        return False
 
     @property
     def is_completed(self) -> bool:
@@ -132,45 +138,64 @@ class Todo(models.Model):
         if self.recurrence is not None and self.recurrence != "":
             task.add_attribute("rec", self.recurrence)
 
+        for project in self.projects.all():
+            task.add_project(project.name)
+
+        for context in self.contexts.all():
+            task.add_context(context.name)
+
         return str(task)
 
     to_string.short_description = "Todo.txt string"
 
-    @classmethod
-    def from_string(cls, string: str) -> "Todo":
-        """Converts a todo.txt compliant string into a new object"""
+    def update_from_string(self, string: str) -> None:
+        """Updates the todo based on the information from the todo.txt string passed in."""
         task = Task(string)
-        todo = Todo.objects.create(description=task.bare_description(), priority=task.priority, completion_date=task.completion_date)
 
         all_projects = {project.name: project for project in Project.objects.all()}
         all_contexts = {context.name: context for context in Context.objects.all()}
 
+        self.description = task.bare_description()
+        self.priority = task.priority
+        self.completion_date = task.completion_date
+
         for attribute_key, attribute_values in task.attributes.items():
             match attribute_key:
                 case "due":
-                    todo.due_date = to_date(attribute_values[0])
+                    self.due_date = to_date(attribute_values[0])
 
                 case "rec":
-                    todo.recurrence = attribute_values[0]
+                    self.recurrence = attribute_values[0]
 
                 case "t" | "start":
-                    todo.start_date = to_date(attribute_values[0])
+                    self.start_date = to_date(attribute_values[0])
 
                 case _:
                     continue
 
+        self.save()
+
+        self.projects.clear()
+        self.contexts.clear()
+
         for project in task.projects:
             if project in all_projects.keys():
-                todo.projects.add(all_projects[project])
+                self.projects.add(all_projects[project])
 
             else:
-                todo.projects.create(name=project)
+                self.projects.create(name=project)
 
         for context in task.contexts:
             if context in all_contexts.keys():
-                todo.contexts.add(all_contexts[context])
+                self.contexts.add(all_contexts[context])
 
             else:
-                todo.contexts.create(name=context)
+                self.contexts.create(name=context)
+
+    @classmethod
+    def from_string(cls, string: str) -> "Todo":
+        """Converts a todo.txt compliant string into a new object"""
+        todo = Todo.objects.create(description="New todo from string")
+        todo.update_from_string(string)
 
         return todo
