@@ -72,3 +72,12 @@ def postpone(request):
         messages.success(request, "Todo '{description}' postponed to {date}".format(description=todo.description, date=todo.start_date.strftime("%a %d.%m.%y")))
 
     return redirect("todoguardian:index")
+
+
+def notes(request):
+    if request.method == "POST":
+        todo = Todo.objects.get(id=request.POST.get("noteTodoID"))
+        todo.annotations.create(text=request.POST.get("noteTodoText"))
+        messages.success(request, "Note added to todo '{description}'".format(description=todo.description))
+
+    return redirect("todoguardian:index")
