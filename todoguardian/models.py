@@ -140,20 +140,90 @@ class Todo(models.Model):
     def from_string(cls, string: str) -> "Todo":
         """Converts a todo.txt compliant string into a new object"""
         task = Task(string)
-        todo = Todo.objects.create(description=task.bare_description, priority=task.priority, completion_date=task.completion_date)
+        todo = Todo.objects.create(description=task.bare_description(), priority=task.priority, completion_date=task.completion_date)
+
+        all_projects = {project.name: project for project in Project.objects.all()}
+        all_contexts = {context.name: context for context in Context.objects.all()}
+
+        for attribute_key, attribute_values in task.attributes.items():
+            match attribute_key:
+                case "due":
+                    todo.due_date = to_date(attribute_values[0])
+
+                case "rec":
+                    todo.recurrence = attribute_values[0]
+
+                case "t" | "start":
+                    todo.start_date = to_date(attribute_values[0])
+
+                case _:
+                    continue
+
+        for project in task.projects:
+            if project in all_projects.keys():
+                todo.projects.add(all_projects[project])
+
+            else:
+                todo.projects.create(name=project)
+
+        for context in task.contexts:
+            if context in all_contexts.keys():
+                todo.contexts.add(all_contexts[context])
+
+            else:
+                todo.contexts.create(name=context)
+
+        return todo
+
+        """  projects = {project.name: project for project in Project.objects.all()}
+        contexts = {context.name: context for context in Context.objects.all()}
+
+        for project in task.projects:
+            projects_to_add = []
+
+            # First check to see if object is already cached
+            if project in projects.keys():
+                projects_to_add.append(projects[project])
+            else:
+                projects_to_add.append(Project.objects.create(name=project))
+
+            todo.projects.set(projects_to_add)
+
+        for context in task.contexts:
+            contexts_to_add = []
+
+            # First check to see if object is already cached
+            if context in contexts.keys():
+                contexts_to_add.append(contexts[context])
+            else:
+                contexts_to_add.append(Context.objects.create(name=context))
+
+            todo.contexts.set(contexts_to_add)
 
         for attribute, values in task.attributes.items():
             match attribute:
                 case "due":
-                    todo.due_date = values[0]
+                    # First see if it matches a pattern
+                    date = to_date(values[0])
+                    if date is not None:
+                        todo.due_date = date
+
+                    else:
+                        todo.due_date = values[0]
 
                 case "rec":
                     todo.recurrence = values[0]
 
                 case "t" | "start":
-                    todo.start_date = values[0]
+                    # First see if it matches a pattern
+                    date = to_date(values[0])
+                    if date is not None:
+                        todo.start_date = date
+
+                    else:
+                        todo.start_date = values[0]
 
                 case _:
                     continue
 
-        return todo
+        return todo"""
