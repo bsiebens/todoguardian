@@ -2,8 +2,7 @@ from dateutil.relativedelta import relativedelta
 from django.test import TestCase
 from django.utils import timezone
 
-from ...exceptions import NoRecurrenceException
-from ...functions.recurrence import advance_todo
+from ...functions.recurrence import NoRecurrenceException, advance_todo
 from ...models import Todo
 
 

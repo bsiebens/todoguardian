@@ -4,9 +4,8 @@ from django.db.models.fields import DateField
 from django.db.models.functions import Coalesce
 from django.shortcuts import redirect, render
 
-from .functions.recurrence import advance_todo
+from .functions.recurrence import NoRecurrenceException, advance_todo
 from .models import Todo
-from .exceptions import NoRecurrenceException
 
 
 def index(request):
