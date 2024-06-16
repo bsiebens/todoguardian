@@ -78,7 +78,7 @@ class Todo(models.Model):
     @property
     def is_due_soon(self) -> bool:
         """Returns true if a todo is due in the next 3 days"""
-        return timezone.localdate() + relativedelta(days=3) > self.due_date
+        return timezone.localdate() + relativedelta(days=3) > self.due_date and timezone.localdate() <= self.due_date
 
     @property
     def is_completed(self) -> bool:

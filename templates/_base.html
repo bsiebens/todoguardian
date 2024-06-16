@@ -39,13 +39,27 @@
               </label>
         </div>
     </div>
+
+    <div>
+        <form method="post" action="{% url "todoguardian:add" %}" id="add_form" class="m-16 mb-2 p-2 flex flex-row gap-x-2">
+            <label class="input input-bordered flex items-center gap-2 grow">
+                <input type="text" class="grow" placeholder="Add new todo">
+                <span class="material-symbols-rounded text-base-300" title="Now todos can be added using todo.txt format, supports natural language for days (e.g., (A) Create new todo due:today)">help</span>
+            </label>
+            {% comment %} <input type="text" placeholder="Add a new todo ..." class="input input-bordered w-full" /> {% endcomment %}
+            <button class="btn" type="submit" form="add_form">
+                <span class="material-symbols-rounded">add</span>
+                Add new todo
+            </button>
+        </form>
+    </div>
         
-    <div class="m-16 mb-0 grid grid-cols-2">
+    <div class="mx-16 grid grid-cols-2">
         <div>TABS</div>
 
         <div class="self-center justify-self-end">BUTTON</div>
     </div>
-
+    
     <div class="m-8 mt-0 flex flex-col gap-y-1">
         {% block content %}CONTENT{% endblock %}
     </div>

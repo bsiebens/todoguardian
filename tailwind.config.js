@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {},
     fontFamily: {
-      "sans": ["Ubuntu", "Noto Sans"],
+      "sans": ["Noto Sans"],
     }
   },
   plugins: [
