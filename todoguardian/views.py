@@ -20,7 +20,7 @@ def index(request):
             "start_date_value",
             "priority",
         )
-        .prefetch_related("projects", "contexts")
+        .prefetch_related("projects", "contexts", "annotations")
     )
 
     return render(request, "index.html", {"todos": todos})

@@ -204,7 +204,7 @@ class Todo(models.Model):
 class Annotation(models.Model):
     """An annotation can be used to keep track of changes/statuses and notes for a given todo"""
 
-    todo = models.ForeignKey(Todo, on_delete=models.CASCADE)
+    todo = models.ForeignKey(Todo, on_delete=models.CASCADE, related_name="annotations")
     text = models.TextField()
 
     created = models.DateTimeField(auto_now_add=True)
