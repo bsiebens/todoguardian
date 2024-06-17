@@ -110,11 +110,9 @@ class Todo(models.Model):
         """
         Postpones the todo based on the given pattern. Following rules are followed:
 
-        * if due_date > today:
-            due_date = due_date + pattern
-            start_date = due_date - length (or today + pattern if no start_date)
-        * else due_date = today + pattern
-            start_date = due_date - length (or today + pattern if no start_date)
+        * If due_date:
+            new due_date = today + pattern if due_date is passed else due_date + pattern
+        * New start_date = today + pattern if start_date is passed or None else start_date + pattern
         """
 
         if self.due_date:
