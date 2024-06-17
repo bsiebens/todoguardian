@@ -1,3 +1,4 @@
+import re
 import string
 from datetime import date
 
@@ -13,36 +14,24 @@ class Project(models.Model):
     """A project can be any type of collection of todos"""
 
     name = models.CharField(max_length=250)
-    slug = models.SlugField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
         ordering = ["name"]
-
-    def save(self, *args, **kwargs):
-        self.slug = text.slugify(self.name)
-
-        super(Project, self).save(*args, **kwargs)
 
 
 class Context(models.Model):
     """A context can be any type of similar todos or related todos"""
 
     name = models.CharField(max_length=250)
-    slug = models.SlugField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
         ordering = ["name"]
-
-    def save(self, *args, **kwargs):
-        self.slug = text.slugify(self.name)
-
-        super(Project, self).save(*args, **kwargs)
 
 
 class Todo(models.Model):
@@ -163,10 +152,10 @@ class Todo(models.Model):
             task.add_attribute("rec", self.recurrence)
 
         for project in self.projects.all():
-            task.add_project(project.name)
+            task.add_project(text.slugify(project.name))
 
         for context in self.contexts.all():
-            task.add_context(context.name)
+            task.add_context(text.slugify(context.name))
 
         return str(task)
 
@@ -203,6 +192,8 @@ class Todo(models.Model):
         self.contexts.clear()
 
         for project in task.projects:
+            project = re.sub(r"-+", " ", project)
+
             if project in all_projects.keys():
                 self.projects.add(all_projects[project])
 
@@ -210,6 +201,8 @@ class Todo(models.Model):
                 self.projects.create(name=project)
 
         for context in task.contexts:
+            context = re.sub(r"-+", " ", context)
+
             if context in all_contexts.keys():
                 self.contexts.add(all_contexts[context])
 
