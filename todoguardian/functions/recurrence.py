@@ -52,4 +52,7 @@ def advance_todo(todo: Todo, offset: date | None = None, save: bool = True) -> T
     if save:
         advanced_todo.save()
 
+    advanced_todo.projects.set(todo.projects.all())
+    advanced_todo.contexts.set(todo.contexts.all())
+
     return advanced_todo
