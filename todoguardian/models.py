@@ -116,9 +116,14 @@ class Todo(models.Model):
         """
 
         if self.due_date:
-            self.due_date = to_date(pattern, self.due_date)
+            distance = self.length
 
-        self.start_date = to_date(pattern, self.start_date)
+            self.due_date = to_date(pattern)
+            self.start_date = self.due_date - relativedelta(days=distance)
+
+        else:
+            self.start_date = to_date(pattern)
+
         self.save()
 
     def to_string(self) -> str:
