@@ -2489,10 +2489,6 @@ html{
   grid-column: span 7 / span 7;
 }
 
-.col-span-9{
-  grid-column: span 9 / span 9;
-}
-
 .col-span-8{
   grid-column: span 8 / span 8;
 }
@@ -2582,10 +2578,6 @@ html{
 
 .grow{
   flex-grow: 1;
-}
-
-.grid-cols-10{
-  grid-template-columns: repeat(10, minmax(0, 1fr));
 }
 
 .grid-cols-12{
