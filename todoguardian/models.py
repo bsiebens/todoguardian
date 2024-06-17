@@ -110,15 +110,21 @@ class Todo(models.Model):
         """
         Postpones the todo based on the given pattern. Following rules are followed:
 
-        * if due_date is set: new due_date = due_date + pattern
-        * if start_date is set: new start_date = start_date + pattern
-        * if no start_date is set: new start_date = today + pattern
+        * if due_date > today:
+            due_date = due_date + pattern
+            start_date = due_date - length (or today + pattern if no start_date)
+        * else due_date = today + pattern
+            start_date = due_date - length (or today + pattern if no start_date)
         """
 
         if self.due_date:
             distance = self.length
 
-            self.due_date = to_date(pattern)
+            if self.due_date < timezone.localdate():
+                self.due_date = to_date(pattern)
+            else:
+                self.due_date = to_date(pattern, self.due_date)
+
             self.start_date = self.due_date - relativedelta(days=distance)
 
         else:
