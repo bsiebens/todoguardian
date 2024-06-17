@@ -128,7 +128,10 @@ class Todo(models.Model):
             self.start_date = self.due_date - relativedelta(days=distance)
 
         else:
-            self.start_date = to_date(pattern)
+            if self.start_date > timezone.localdate():
+                self.start_date = to_date(pattern, self.start_date)
+            else:
+                self.start_date = to_date(pattern)
 
         self.save()
 
