@@ -205,11 +205,11 @@
                         {% if todo.annotations.count > 0 %}
                             <div class="col-span-12 mt-2">
                                 {% for annotation in todo.annotations.all %}
-                                    <div class="grid grid-cols-6 text-xs items-center {% if not forloop.last %}mb-2{% endif %}">
+                                    <div class="grid grid-cols-9 text-xs items-center {% if not forloop.last %}mb-2{% endif %}">
                                         <div class="font-semibold flex justify-end pr-4">
                                             {{ annotation.created|naturaltime }}
                                         </div>
-                                        <div class="col-span-5 flex items-center">
+                                        <div class="col-span-8 flex items-center">
                                             <span class="material-symbols-rounded mr-1 text-sm">notes</span>
                                             {{ annotation.text }}
                                         </div>
