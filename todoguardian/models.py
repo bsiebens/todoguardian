@@ -1,3 +1,4 @@
+import re
 import string
 from datetime import date
 
@@ -110,11 +111,9 @@ class Todo(models.Model):
         """
         Postpones the todo based on the given pattern. Following rules are followed:
 
-        * if due_date > today:
-            due_date = due_date + pattern
-            start_date = due_date - length (or today + pattern if no start_date)
-        * else due_date = today + pattern
-            start_date = due_date - length (or today + pattern if no start_date)
+        * If due_date:
+            new due_date = today + pattern if due_date is passed else due_date + pattern
+        * New start_date = today + pattern if start_date is passed or None else start_date + pattern
         """
 
         if self.due_date:
@@ -153,10 +152,10 @@ class Todo(models.Model):
             task.add_attribute("rec", self.recurrence)
 
         for project in self.projects.all():
-            task.add_project(project.name)
+            task.add_project(text.slugify(project.name))
 
         for context in self.contexts.all():
-            task.add_context(context.name)
+            task.add_context(text.slugify(context.name))
 
         return str(task)
 
@@ -193,6 +192,8 @@ class Todo(models.Model):
         self.contexts.clear()
 
         for project in task.projects:
+            project = re.sub(r"-+", " ", project)
+
             if project in all_projects.keys():
                 self.projects.add(all_projects[project])
 
@@ -200,6 +201,8 @@ class Todo(models.Model):
                 self.projects.create(name=project)
 
         for context in task.contexts:
+            context = re.sub(r"-+", " ", context)
+
             if context in all_contexts.keys():
                 self.contexts.add(all_contexts[context])
 
