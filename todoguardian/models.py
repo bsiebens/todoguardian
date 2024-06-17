@@ -13,24 +13,36 @@ class Project(models.Model):
     """A project can be any type of collection of todos"""
 
     name = models.CharField(max_length=250)
+    slug = models.SlugField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
         ordering = ["name"]
+
+    def save(self, *args, **kwargs):
+        self.slug = text.slugify(self.name)
+
+        super(Project, self).save(*args, **kwargs)
 
 
 class Context(models.Model):
     """A context can be any type of similar todos or related todos"""
 
     name = models.CharField(max_length=250)
+    slug = models.SlugField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
         ordering = ["name"]
+
+    def save(self, *args, **kwargs):
+        self.slug = text.slugify(self.name)
+
+        super(Project, self).save(*args, **kwargs)
 
 
 class Todo(models.Model):
