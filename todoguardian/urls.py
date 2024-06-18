@@ -5,6 +5,7 @@ from . import views
 app_name = "todoguardian"
 urlpatterns = [
     path("", views.index, name="index"),
+    path("dashboard/", views.dashboard, name="dashboard"),
     path("add/", views.add, name="add"),
     path("complete/", views.complete, name="complete"),
     path("edit/", views.edit, name="edit"),

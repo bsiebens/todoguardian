@@ -8,6 +8,10 @@ from .functions.recurrence import NoRecurrenceException, advance_todo
 from .models import Todo
 
 
+def dashboard(request):
+    return render(request, "dashboard.html")
+
+
 def index(request):
     todos = (
         Todo.objects.annotate(
