@@ -9,7 +9,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>Todo Guardian - {% block title %}Dashboard{% endblock %}</title>
+        <title>Todo Guardian - {% block title %}Dashboard{% endblock title %}</title>
 
         {% compress css %}
             <link rel="stylesheet" href="{% static 'src/output.css' %}" />
@@ -59,9 +59,13 @@
                 <div class="dropdown dropdown-end">
                     <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
                         {% if request.user.is_authenticated %}
-                            <img src="{% render_initials_avatar request.user.get_full_name %}" class="rounded rounded-full w-10" />
+                            {% if request.user.first_name is not None or request.user.last_name is not None %}
+                                <img src="{% render_initials_avatar request.user.get_full_name size="225" %}" class="rounded rounded-full w-10" />
+                            {% else %}
+                                <img src="{% render_initials_avatar request.user.username size="225" %}" class="rounded rounded-full w-10" />
+                            {% endif %}
                         {% else %}
-                            <img src="{% render_initials_avatar "anonymous" %}"  class="rounded rounded-full w-10" />
+                            <img src="{% render_initials_avatar "anonymous" size="225" %}"  class="rounded rounded-full w-10" />
                         {% endif %}
                     </div>
 
@@ -80,7 +84,7 @@
         </div>
 
         <div class="bg-red-500">
-            CONTENT
+            {% block content %}{% endblock content %}
         </div>
 
         <footer class="footer items-center p-4 bg-neutral text-neutral-content">
