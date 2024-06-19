@@ -3,7 +3,7 @@
 {% load initials_avatar %}
 
 <!DOCTYPE html>
-<html lang="en" data-theme="emerald" class="h-full bg-gray-100">
+<html lang="en" data-theme="light" class="h-full">
     <head>
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -19,7 +19,7 @@
     </head>
 
     <body class="h-full">
-        <div class="navbar bg-base-100">
+        <div class="navbar bg-base-200 border-b border-base-300">
             <div class="navbar-start">
                 <div class="dropdown">
                     <div tabindex="0" role="button" class="btn btn-ghost laptop:hidden">
@@ -83,7 +83,7 @@
             </div>
         </div>
 
-        <div class="bg-red-500">
+        <div class="bg-red-500 m-4">
             {% block content %}{% endblock content %}
         </div>
 
