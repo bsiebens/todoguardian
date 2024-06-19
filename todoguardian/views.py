@@ -3,13 +3,22 @@ from django.db.models import F, Value
 from django.db.models.fields import DateField
 from django.db.models.functions import Coalesce
 from django.shortcuts import redirect, render
+from django.utils import timezone
 
 from .functions.recurrence import NoRecurrenceException, advance_todo
 from .models import Todo
 
 
 def dashboard(request):
-    return render(request, "dashboard.html")
+    todos = (
+        Todo.objects.filter(completion_date=None)
+        .exclude(start_date__gt=timezone.localdate())
+        .annotate(due_date_value=Coalesce("due_date", Value("9999-12-31"), output_field=DateField()), start_date_value=Coalesce("start_date", Value("9999-12-31"), output_field=DateField()))
+        .order_by("due_date_value", "start_date_value", "priority")
+        .prefetch_related("projects", "contexts", "annotations")
+    )
+
+    return render(request, "dashboard.html", {"todos": todos})
 
 
 def index(request):

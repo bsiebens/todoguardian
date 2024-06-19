@@ -3,5 +3,31 @@
 {% block title %}Dashboard{% endblock title %}
 
 {% block content%}
-    DASHBOARD CONTENT
+    <div class="w-full mt-2 mb-6 text-2xl font-medium">Dashboard</div>
+
+    <div class="flex flex-col gap-y-2">
+        {% for todo in todos %}
+            <a href="#"> <!-- TODO link to detail page (only for mobile devices, not needed on laptop) -->
+                <div class="border border-neutral-content p-2 rounded rounded-md flex flex-col gap-y-2">
+                    <div class="flex flex-row justify-between items-center">
+                        <div class="font-medium">{{ todo.description }}</div>
+
+                        {% if todo.priority %}
+                            {% if todo.priority == "A" %}
+                                <div class="badge badge-accent">{{ todo.priority|default:"-" }}</div>
+                            {% elif todo.priority == "B" %}
+                                <div class="badge badge-primary">{{ todo.priority|default:"-" }}</div>
+                            {% elif todo.priority == "C" %}
+                                <div class="badge badge-secondary">{{ todo.priority|default:"-" }}</div>
+                            {% else %}
+                                <div class="badge badge-info">{{ todo.priority|default:"-" }}</div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <div>wfnwkefnel;knfekrfnerkjfnerkjfnernf</div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
 {% endblock content %}
