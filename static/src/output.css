@@ -3218,6 +3218,10 @@ html{
   border-bottom-width: calc(1px * var(--tw-divide-y-reverse));
 }
 
+.place-self-center{
+  place-self: center;
+}
+
 .self-center{
   align-self: center;
 }
