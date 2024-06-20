@@ -1,5 +1,7 @@
 {% extends "_base_new.html" %}
 
+{% load humanize %}
+
 {% block title %}Dashboard{% endblock title %}
 
 {% block content%}
@@ -9,8 +11,8 @@
         {% for todo in todos %}
             <a href="#"> <!-- TODO link to detail page (only for mobile devices, not needed on laptop) -->
                 <div class="border border-neutral-content p-2 rounded rounded-md flex flex-col gap-y-2">
-                    <div class="flex flex-row justify-between items-center">
-                        <div class="font-medium">{{ todo.description }}</div>
+                    <div class="flex flex-row justify-between items-center pb-2 border-b border-neutral-content">
+                        <div class="font-semibold">{{ todo.description }}</div>
 
                         {% if todo.priority %}
                             {% if todo.priority == "A" %}
@@ -25,7 +27,78 @@
                         {% endif %}
                     </div>
 
-                    <div>wfnwkefnel;knfekrfnerkjfnerkjfnernf</div>
+                    <div class="grid grid-cols-3 mt-2 text-sm">
+                        <div class="col-span-2 flex flex-row justify-between gap-x-2">
+                            <div>
+                                <i class="fa-solid fa-play mr-3"></i>{{ todo.start_date|naturalday:"D d.m.Y" }}
+                            </div>
+                            <div>
+                                {% if todo.recurrence %}
+                                    <i class="fa-solid fa-repeat mr-2"></i>{{ todo.recurrence }}
+                                {% endif %}
+                            </div>
+                        </div>
+                            {% if todo.is_completed %}
+                                <div class="row-span-2 justify-self-end flex justify-center items-center h-12 w-12 rounded bg-success text-success-content">
+                                    <i class="fa-solid fa-check text-2xl"></i>
+                                </div>
+                            {% elif todo.is_due_soon %}
+                                <div class="row-span-2 justify-self-end flex justify-center items-center h-12 w-12 rounded bg-warning text-warning-content">
+                                    <span class="fa-solid fa-triangle-exclamation text-2xl"></span>
+                                </div>
+                            {% elif todo.is_overdue %}
+                                <div class="row-span-2 justify-self-end flex justify-center items-center h-12 w-12 rounded bg-error text-error-content">
+                                    <span class="fa-solid fa-circle-exclamation text-2xl"></span>
+                                </div>
+                            {% endif %}
+
+                        <div class="col-span-2">
+                            {% if todo.due_date is not None %}
+                                <i class="fa-solid fa-calendar-days mr-2"></i>{{ todo.due_date|naturalday:"D d.m.Y" }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if todo.contexts.count > 0 or todo.projects.count > 0 %}
+                        <div class="flex flex-row gap-x-2 mt-2">
+                            {% if todo.contexts.count > 0 %}
+                                <div class="flex flex-row flex-auto flex-wrap justify-center gap-2">
+                                    {% for context in todo.contexts.all %}
+                                        <div class="bg-info text-info-content chip">
+                                            <span><i class="fa-solid fa-tag"></i></span>
+                                            <span>{{ context.name }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {% if todo.projects.count > 0 %}
+                                <div class="flex flex-row flex-wrap flex-auto justify-center gap-2">
+                                    {% for project in todo.projects.all %}
+                                        <div class="bg-accent text-accent-content chip">
+                                            <span><i class="fa-solid fa-clipboard"></i></span>
+                                            <span>{{ project.name }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div class="flex flex-row gap-x-2 h-16 p-2 mt-2 border-t border-neutral-content">
+                        <div class="flex grow bg-neutral-content text-neutral chip hover:bg-success hover:text-success-content">
+                            <i class="fa-solid fa-check text-2xl"></i>
+                        </div>
+                        <div class="flex grow bg-neutral-content text-neutral chip hover:bg-info hover:text-info-content">
+                            <i class="fa-solid fa-pencil text-2xl"></i>
+                        </div>
+                        <div class="flex grow bg-neutral-content text-neutral chip hover:bg-info hover:text-info-content">
+                            <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
+                        </div>
+                        <div class="flex grow bg-neutral-content text-neutral chip hover:bg-info hover:text-info-content">
+                            <i class="fa-solid fa-pen-to-square text-2xl"></i>
+                        </div>
+                    </div>
                 </div>
             </a>
         {% endfor %}
