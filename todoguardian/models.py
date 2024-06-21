@@ -38,7 +38,7 @@ class Todo(models.Model):
     """This class contains common fields for storing todos"""
 
     description = models.TextField()
-    priority = models.CharField(max_length=1, choices={i: i for i in string.ascii_uppercase}, blank=True)
+    priority = models.CharField(max_length=1, choices={i: i for i in string.ascii_uppercase}, blank=True, null=True)
     recurrence = models.CharField(max_length=5, blank=True, help_text="Recurrence can be defined as a string ([0-9][bdwmy]), add + in front to have strict recurrence.")
 
     start_date = models.DateField(default=timezone.localdate)

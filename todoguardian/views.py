@@ -4,12 +4,13 @@ from django.db.models.fields import DateField
 from django.db.models.functions import Coalesce
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.http import HttpRequest, HttpResponse
 
 from .functions.recurrence import NoRecurrenceException, advance_todo
 from .models import Todo
 
 
-def dashboard(request):
+def dashboard(request: HttpRequest) -> HttpResponse:
     todos = (
         Todo.objects.filter(completion_date=None)
         .exclude(start_date__gt=timezone.localdate())
@@ -19,6 +20,23 @@ def dashboard(request):
     )
 
     return render(request, "dashboard.html", {"todos": todos})
+
+
+def add(request: HttpRequest) -> HttpResponse:
+    if request.method == "POST":
+        todo = Todo.from_string(request.POST.get("todo_string"))
+        messages.success(request, "New todo <span class='font-semibold'>{description}</span> created".format(description=todo.description))
+
+    return redirect("todoguardian:dashboard")
+
+
+def edit(request: HttpRequest, id: int) -> HttpResponse:
+    if request.method == "POST":
+        todo = Todo.objects.get(id=id)
+        todo.update_from_string(request.POST.get("todo_string"))
+        messages.success(request, "Todo '{description}' changed".format(description=todo.description))
+
+    return redirect("todoguardian:dashboard")
 
 
 def index(request):
@@ -39,12 +57,13 @@ def index(request):
     return render(request, "index.html", {"todos": todos})
 
 
-def add(request):
+""" def add(request):
     if request.method == "POST":
         todo = Todo.from_string(request.POST.get("addTodoFromString"))
         messages.success(request, "New todo '{description}' created".format(description=todo.description))
 
     return redirect("todoguardian:index")
+ """
 
 
 def complete(request):
@@ -69,13 +88,13 @@ def complete(request):
     return redirect("todoguardian:index")
 
 
-def edit(request):
+""" def edit(request):
     if request.method == "POST":
         todo = Todo.objects.get(id=request.POST.get("editTodoID"))
         todo.update_from_string(request.POST.get("editTodoString"))
         messages.success(request, "Todo '{description}' changed".format(description=todo.description))
 
-    return redirect("todoguardian:index")
+    return redirect("todoguardian:index") """
 
 
 def postpone(request):

@@ -90,6 +90,34 @@
         </div>
 
         <div class="m-4">
+            {% if messages %}
+                <div class="m-4 p-2 flex flex-col gap-y-2">      
+                    {% for message in messages %}
+                        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                            <div role="alert" class="alert alert-success">
+                                <span class="material-symbols-rounded">check_circle</span>
+                                <span>{{ message|safe }}</span>
+                            </div>
+                        {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                            <div role="alert" class="alert alert-warning">
+                                <span class="material-symbols-rounded">cancel</span>
+                                <span>{{ message|safe }}</span>
+                            </div>
+                        {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                            <div role="alert" class="alert alert-error">
+                                <span class="material-symbols-rounded">error</span>
+                                <span>{{ message|safe }}</span>
+                            </div>
+                        {% else %}
+                            <div role="alert" class="alert alert-info">
+                                <span class="material-symbols-rounded">info</span>
+                                <span>{{ message|safe }}</span>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             {% block content %}{% endblock content %}
         </div>
 

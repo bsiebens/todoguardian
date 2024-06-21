@@ -7,6 +7,12 @@
 {% block content%}
     <div class="w-full mt-2 mb-6 text-2xl font-medium">Dashboard</div>
 
+    <div class="flex mb-2 laptop:hidden">
+        <button class="flex grow bg-neutral-content text-neutral chip hover:bg-info hover:text-info-content" onclick="add_todo.showModal()">
+            <i class="fa-solid fa-plus mr-2"></i>Add new todo
+        </button>
+    </div>
+
     <div class="flex flex-col gap-y-2 laptop:hidden">
         {% for todo in todos %}
             <div class="border border-neutral-content p-2 rounded rounded-md flex flex-col gap-y-2">
@@ -113,17 +119,44 @@
     </div>
 
     <!-- Modals section -->
-    {% for todo in todos %}
-        <dialog id="edit_todo_{{ todo.id }}" class="modal">
-            <div class="modal-box">
-                <h3 class="font-bold">Update todo</h3>
-                <p class="py-4">Update todo {{ todo.id }}</p>
+    <dialog id="add_todo" class="modal modal-bottom laptop:modal-middle">
+        <div class="modal-box">
+            <h3 class="font-semibold mb-2">
+                <i class="fa-solid fa-plus mr-2"></i>Add todo
+            </h3>
 
-                <div class="modal-action">
-                    <form method="dialog">
-                        <button clas="btn">Close</button>
-                    </form>
-                </div>
+            <form method="post" action="{% url "todoguardian:add_todo" %}">
+                {% csrf_token %}
+
+                <textarea name="todo_string" placeholder="(A) Some todo this is due:today" class="textarea textarea-bordered w-full h-52"></textarea>
+
+                <button class="btn hover:btn-info w-full mt-2" type="submit">
+                    Save
+                </button>
+            </form>
+        </div>
+
+        <form method="dialog" class="modal-backdrop">
+            <button clas="btn">close</button>
+        </form>
+    </dialog>
+
+    {% for todo in todos %}
+        <dialog id="edit_todo_{{ todo.id }}" class="modal modal-bottom laptop:modal-middle">
+            <div class="modal-box">
+                <h3 class="font-semibold mb-2">
+                    <i class="fa-solid fa-pencil mr-2"></i>Update todo
+                </h3>
+
+                <form method="post" action="{% url "todoguardian:edit_todo" todo.id %}">
+                    {% csrf_token %}
+
+                    <textarea name="todo_string" placeholder="(A) Some todo this is due:today" class="textarea textarea-bordered w-full h-52">{{ todo.to_string }}</textarea>
+
+                    <button class="btn hover:btn-info w-full mt-2" type="submit">
+                        Save
+                    </button>
+                </form>
             </div>
 
             <form method="dialog" class="modal-backdrop">
