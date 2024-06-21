@@ -98,9 +98,9 @@
                     <div class="flex grow bg-neutral-content text-neutral chip hover:bg-success hover:text-success-content">
                         <i class="fa-solid fa-check text-2xl"></i>
                     </div>
-                    <div class="flex grow bg-neutral-content text-neutral chip hover:bg-info hover:text-info-content">
+                    <button class="flex grow bg-neutral-content text-neutral chip hover:bg-info hover:text-info-content" onclick="edit_todo_{{ todo.id }}.showModal()">
                         <i class="fa-solid fa-pencil text-2xl"></i>
-                    </div>
+                    </button>
                     <div class="flex grow bg-neutral-content text-neutral chip hover:bg-info hover:text-info-content">
                         <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
                     </div>
@@ -111,4 +111,24 @@
             </div>
         {% endfor %}
     </div>
+
+    <!-- Modals section -->
+    {% for todo in todos %}
+        <dialog id="edit_todo_{{ todo.id }}" class="modal">
+            <div class="modal-box">
+                <h3 class="font-bold">Update todo</h3>
+                <p class="py-4">Update todo {{ todo.id }}</p>
+
+                <div class="modal-action">
+                    <form method="dialog">
+                        <button clas="btn">Close</button>
+                    </form>
+                </div>
+            </div>
+
+            <form method="dialog" class="modal-backdrop">
+                <button clas="btn">close</button>
+            </form>
+        </dialog>
+    {% endfor %}
 {% endblock content %}
