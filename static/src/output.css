@@ -3450,6 +3450,10 @@ details.collapse summary::-webkit-details-marker{
   grid-template-columns: repeat(9, minmax(0, 1fr));
 }
 
+.grid-cols-5{
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 .flex-row{
   flex-direction: row;
 }

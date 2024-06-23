@@ -151,6 +151,15 @@
     <div class="hidden laptop:flex laptop:flex-col gap-y-2">
         {% regroup todos by due_date_code as todos_by_due_date %}
 
+        <div class="grid grid-cols-5 border border-base-300 p-2 rounded-md">
+            <div>Overdue</div>
+            <div>Due today</div>
+            <div>Due soon (next 3 days)</div>
+            <div>Due later</div>
+            <div>No due date</div>
+        </div>
+
+
         {% for due_date, todos in todos_by_due_date %}
             <div class="collapse collapse-arrow border-base-300 border">
                 <input type="checkbox" checked />
