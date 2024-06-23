@@ -89,6 +89,31 @@ class Todo(models.Model):
         return False
 
     @property
+    def due_date_code(self) -> int:
+        """
+        Returns a code representing due date for this todo.
+
+        * -1: overdue
+        * 0: due today
+        * 1: due soon
+        * 2: due later
+        * 3: no due date
+        """
+        if self.is_overdue:
+            return -1
+
+        if self.due_date == timezone.localdate():
+            return 0
+
+        if self.is_due_soon:
+            return 1
+
+        if self.due_date is not None:
+            return 2
+
+        return 3
+
+    @property
     def is_completed(self) -> bool:
         return self.completion_date is not None
 

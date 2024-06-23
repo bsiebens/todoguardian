@@ -132,6 +132,50 @@
         {% endfor %}
     </div>
 
+    <div class="hidden laptop:flex mb-2">
+        <form method="post" action="{% url "todoguardian:add_todo" %}" class="p-2 flex flex-row gap-x-2 grow">
+            {% csrf_token %}
+
+            <label class="input input-bordered flex items-center gap-2 grow">
+                <input name="todo_string" type="text" class="grow" placeholder="(A) Some todo that is due:today" />
+                <div class="tooltip" data-tip="Use todo.txt format, natural days are supported (e.g., due:today). For projects and contexts use - instead of a space.">
+                    <i class="fa-solid fa-circle-question text-neutral-content"></i>
+                </div>
+            </label>
+            <button class="btn" type="submit">
+                <i class="fa-solid fa-plus"></i>Add todo
+            </button>
+        </form>
+    </div>
+
+    <div class="hidden laptop:flex laptop:flex-col gap-y-2">
+        {% regroup todos by due_date_code as todos_by_due_date %}
+
+        {% for due_date, todos in todos_by_due_date %}
+            <div class="collapse collapse-arrow border-base-300 border">
+                <input type="checkbox" checked />
+                <div class="collapse-title text-xl font-medium">
+                    {% if due_date == -1 %}
+                        Overdue
+                    {% elif due_date == 0 %}
+                        Due today
+                    {% elif due_date == 1 %}
+                        Due soon (next 3 days)
+                    {% elif due_date == 2 %}
+                        Due later
+                    {% else %}
+                        No due date
+                    {% endif %}
+                </div>
+                <div class="collapse-content">
+                    {% for todo in todos %}
+                        {{ todo.description }}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
     <!-- Modals section -->
     <dialog id="add_todo" class="modal modal-bottom laptop:modal-middle">
         <div class="modal-box">
@@ -142,7 +186,7 @@
             <form method="post" action="{% url "todoguardian:add_todo" %}">
                 {% csrf_token %}
 
-                <textarea name="todo_string" placeholder="(A) Some todo this is due:today" class="textarea textarea-bordered w-full h-52"></textarea>
+                <textarea name="todo_string" placeholder="(A) Some todo that is due:today" class="textarea textarea-bordered w-full h-52"></textarea>
 
                 <button class="btn hover:btn-info w-full mt-2" type="submit">
                     Save
