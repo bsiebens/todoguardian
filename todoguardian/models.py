@@ -38,7 +38,7 @@ class Todo(models.Model):
     """This class contains common fields for storing todos"""
 
     description = models.TextField()
-    priority = models.CharField(max_length=1, choices={i: i for i in string.ascii_uppercase}, blank=True)
+    priority = models.CharField(max_length=1, choices={i: i for i in string.ascii_uppercase}, blank=True, null=True)
     recurrence = models.CharField(max_length=5, blank=True, help_text="Recurrence can be defined as a string ([0-9][bdwmy]), add + in front to have strict recurrence.")
 
     start_date = models.DateField(default=timezone.localdate)
@@ -87,6 +87,31 @@ class Todo(models.Model):
             return timezone.localdate() + relativedelta(days=3) > self.due_date and timezone.localdate() <= self.due_date
 
         return False
+
+    @property
+    def due_date_code(self) -> int:
+        """
+        Returns a code representing due date for this todo.
+
+        * -1: overdue
+        * 0: due today
+        * 1: due soon
+        * 2: due later
+        * 3: no due date
+        """
+        if self.is_overdue:
+            return -1
+
+        if self.due_date == timezone.localdate():
+            return 0
+
+        if self.is_due_soon:
+            return 1
+
+        if self.due_date is not None:
+            return 2
+
+        return 3
 
     @property
     def is_completed(self) -> bool:

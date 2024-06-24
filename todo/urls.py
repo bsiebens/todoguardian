@@ -20,5 +20,6 @@ from django.urls import include, path
 
 urlpatterns = [
     path("", include("todoguardian.urls")),
+    path("initials-avatar/", include("django_initials_avatar.urls")),
     path("admin/", admin.site.urls),
 ]

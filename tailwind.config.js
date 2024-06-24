@@ -8,6 +8,11 @@ module.exports = {
     extend: {},
     fontFamily: {
       "sans": ["Noto Sans"],
+    },
+    screens: {
+      tablet: '640px',
+      laptop: '1064px',
+      desktop: '1280px'
     }
   },
   plugins: [
@@ -15,7 +20,7 @@ module.exports = {
     require("daisyui"),
   ],
   daisyui: {
-    themes: ["emerald", "night"],
+    themes: ["light", "dark"],
   },
 }
 
