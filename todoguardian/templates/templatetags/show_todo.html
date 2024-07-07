@@ -1,0 +1,64 @@
+{% load humanize %}
+
+<tr class="hover">
+    <td>
+        <div class="flex flex-col gap-y-2">
+            <div class="flex flex-row gap-x-2">
+                {% if todo.priority %}
+                    {% if todo.priority == "A" %}
+                        <div class="badge badge-accent">{{ todo.priority|default:"-" }}</div>
+                    {% elif todo.priority == "B" %}
+                        <div class="badge badge-primary">{{ todo.priority|default:"-" }}</div>
+                    {% elif todo.priority == "C" %}
+                        <div class="badge badge-secondary">{{ todo.priority|default:"-" }}</div>
+                    {% else %}
+                        <div class="badge badge-info">{{ todo.priority|default:"-" }}</div>
+                    {% endif %}
+                {% endif %}
+
+                {% if todo.is_completed %}
+                    <div class="justify-items-center">
+                        <i class="text-xl fa-solid fa-check text-success"></i>
+                    </div>
+                {% elif todo.is_due_soon %}
+                    <div class="justify-items-center">
+                        <i class="text-xl fa-solid fa-triangle-exclamation text-warning"></i>
+                    </div>
+                {% elif todo.is_overdue %}
+                    <div class="justify-items-center">
+                        <i class="text-xl fa-solid fa-circle-exclamation text-error"></i>
+                    </div>
+                {% endif %}
+            
+                <div class="font-medium">{{ todo.description }}</div>
+            </div>
+
+            {% if todo.projects.count > 0 or todo.contexts.count > 0 %}
+                <div class="flex flex-row gap-x-1">
+                    {% for project in todo.projects.all %}
+                        <div class="badge badge-sm">
+                            <i class="mr-2 fa-solid fa-tag"></i>{{ project.name }}
+                        </div>
+                    {% endfor %}
+
+                    {% for context in todo.contexts.all %}
+                    <div class="badge badge-sm">
+                        <i class="mr-2 fa-solid fa-clipboard"></i>{{ context.name }}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </td>
+    <td>{{ todo.start_date|default:"-"|naturalday:"D d.m.Y"|capfirst }}</td>
+    <td>{{ todo.due_date|default:"-"|naturalday:"D d.m.Y"|capfirst }}</td>
+    <td>
+        {% if todo.has_strict_recurrence %}
+            <div class="tooltip tooltip-left" data-tip="Strict recurrence">
+                <i class="mr-2 fa-solid fa-lock"></i>
+            </div>
+        {% endif %}
+        {{ todo.recurrence|default:"-" }}
+    </td>
+    <td>ACTIONS</td>
+</tr>

@@ -19,6 +19,23 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         .prefetch_related("projects", "contexts", "annotations")
     )
 
+    counts = {"past": 0, "today": 0, "soon": 0, "later": 0, "none": 0}
+    for todo in todos:
+        match todo.due_date_code:
+            case -1:
+                counts["past"] += 1
+            case 0:
+                counts["today"] += 1
+            case 1:
+                counts["soon"] += 1
+            case 2:
+                counts["later"] += 1
+            case _:
+                counts["none"] += 1
+
+    if request.GET.get("v2"):
+        return render(request, "dashboard2.html", {"todos": todos, "counts": counts})
+
     return render(request, "dashboard.html", {"todos": todos})
 
 

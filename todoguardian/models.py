@@ -89,6 +89,11 @@ class Todo(models.Model):
         return False
 
     @property
+    def has_strict_recurrence(self) -> bool:
+        """Returns True if recurrece is set in a strict way"""
+        return self.recurrence.startswith("+")
+
+    @property
     def due_date_code(self) -> int:
         """
         Returns a code representing due date for this todo.
