@@ -30,22 +30,34 @@
                     </div>
                 {% endif %}
             
-                <div class="font-medium">{{ todo.description }}</div>
+                <div class="flex flex-row justify-between font-medium grow">
+                    {{ todo.description }}
+                </div>
             </div>
 
-            {% if todo.projects.count > 0 or todo.contexts.count > 0 %}
-                <div class="flex flex-row gap-x-1">
+            {% if todo.projects.count > 0 or todo.contexts.count > 0 or todo.annotations.count > 0%}
+                <div class="flex flex-row gap-x-2">
                     {% for project in todo.projects.all %}
-                        <div class="badge badge-sm">
-                            <i class="mr-2 fa-solid fa-tag"></i>{{ project.name }}
-                        </div>
+                        <a href="{% url "todoguardian:dashboard" %}?project={{ project.id }}">
+                            <div class="badge badge-outline badge-neutral">
+                                <i class="mr-2 text-xs fa-solid fa-tag"></i>{{ project.name }}
+                            </div>
+                        </a>
                     {% endfor %}
 
                     {% for context in todo.contexts.all %}
-                    <div class="badge badge-sm">
-                        <i class="mr-2 fa-solid fa-clipboard"></i>{{ context.name }}
-                    </div>
+                        <a href="{% url "todoguardian:dashboard" %}?context={{ context.id }}">
+                            <div class="badge badge-neutral badge-outline">
+                                <i class="mr-2 text-xs fa-solid fa-clipboard"></i>{{ context.name }}
+                            </div>
+                        </a>
                     {% endfor %}
+
+                    {% if todo.annotations.count > 0 %}
+                        <div class="badge badge-outline badge-info">
+                            <i class="mr-2 text-xs fa-solid fa-align-left"></i>{{ todo.annotations.count }} annotation{{ todo.annotations.count|pluralize }}
+                        </div>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
@@ -60,5 +72,44 @@
         {% endif %}
         {{ todo.recurrence|default:"-" }}
     </td>
-    <td>ACTIONS</td>
+    <td>
+        <div class="flex flex-row place-items-center gap-x-2">
+            <form method="post" action="{% url "todoguardian:complete_todo" %}" class="flex">
+                {% csrf_token %}
+                <input type="hidden" name="todo_id" value="{{ todo.id }}" />
+
+                {% if todo.is_completed %}
+                    <div class="tooltip tooltip-bottom" data-tip="Mark pending">
+                        <button class="flex grow bg-neutral-content text-neutral chip hover:bg-success hover:text-success-content" type="submit">
+                            <i class="text-xl fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="tooltip tooltip-bottom" data-tip="Mark complete">
+                        <button class="flex grow bg-neutral-content text-neutral chip hover:bg-success hover:text-success-content" type="submit">
+                            <i class="text-xl fa-solid fa-check"></i>
+                        </button>
+                    </div>
+                {% endif %}
+            </form>
+
+            {% if not todo.is_completed %}
+                <div class="tooltip tooltip-bottom" data-tip="Edit">
+                    <button class="flex grow bg-neutral-content text-neutral chip hover:bg-info hover:text-info-content" onclick="edit_todo_{{ todo.id }}.showModal()">
+                        <i class="text-xl fa-solid fa-pencil"></i>
+                    </button>
+                </div>
+                <div class="tooltip tooltip-bottom" data-tip="Postpone">
+                    <button class="flex grow bg-neutral-content text-neutral chip hover:bg-info hover:text-info-content" onclick="postpone_todo_{{ todo.id }}.showModal()">
+                        <i class="text-xl fa-solid fa-clock-rotate-left"></i>
+                    </button>
+                </div>
+                <div class="tooltip tooltip-bottom" data-tip="Annotate">
+                    <button class="flex grow bg-neutral-content text-neutral chip hover:bg-info hover:text-info-content" onclick="annotate_todo_{{ todo.id }}.showModal()">
+                        <i class="text-xl fa-solid fa-pen-to-square"></i>
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </td>
 </tr>

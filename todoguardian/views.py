@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from .functions.recurrence import NoRecurrenceException, advance_todo
-from .models import Todo
+from .models import Todo, Project, Context
 
 
 def dashboard(request: HttpRequest) -> HttpResponse:
@@ -33,10 +33,32 @@ def dashboard(request: HttpRequest) -> HttpResponse:
             case _:
                 counts["none"] += 1
 
-    if request.GET.get("v2"):
-        return render(request, "dashboard2.html", {"todos": todos, "counts": counts})
+    if request.GET.get("filter"):
+        match request.GET.get("filter"):
+            case "past":
+                todos = [todo for todo in todos if todo.due_date_code == -1]
+            case "today":
+                todos = [todo for todo in todos if todo.due_date_code == 0]
+            case "soon":
+                todos = [todo for todo in todos if todo.due_date_code == 1]
+            case "later":
+                todos = [todo for todo in todos if todo.due_date_code == 2]
+            case "none":
+                todos = [todo for todo in todos if todo.due_date_code == 3]
+            case _:
+                pass
 
-    return render(request, "dashboard.html", {"todos": todos})
+    project = None
+    if request.GET.get("project"):
+        project = Project.objects.get(pk=request.GET.get("project"))
+        todos = todos.filter(projects=project)
+
+    context = None
+    if request.GET.get("context"):
+        context = Context.objects.get(pk=request.GET.get("context"))
+        todos = todos.filter(contexts=context)
+
+    return render(request, "dashboard.html", {"todos": todos, "counts": counts, "filter": request.GET.get("filter"), "project": project, "context": context})
 
 
 def add(request: HttpRequest) -> HttpResponse:
@@ -94,3 +116,26 @@ def complete(request: HttpRequest) -> HttpResponse:
                 messages.success(request, "Todo <span class='font-semibold'>{description}</span> marked as completed".format(description=todo.description))
 
     return redirect("todoguardian:dashboard")
+
+
+def projects(request: HttpRequest) -> HttpResponse:
+    projects = Project.objects.all().order_by("name")
+
+    return render(request, "projects.html", {"projects": projects})
+
+
+def contexts(request: HttpRequest) -> HttpResponse:
+    contexts = Context.objects.all().order_by("name")
+
+    return render(request, "contexts.html", {"contexts": contexts})
+
+
+def archive(request: HttpRequest) -> HttpResponse:
+    todos = (
+        Todo.objects.exclude(completion_date=None)
+        .annotate(due_date_value=Coalesce("due_date", Value("9999-12-31"), output_field=DateField()), start_date_value=Coalesce("start_date", Value("9999-12-31"), output_field=DateField()))
+        .order_by("due_date_value", "start_date_value", "priority")
+        .prefetch_related("projects", "contexts", "annotations")
+    )
+
+    return render(request, "dashboard.html", {"todos": todos})
