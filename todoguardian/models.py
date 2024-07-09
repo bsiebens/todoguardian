@@ -21,6 +21,16 @@ class Project(models.Model):
     class Meta:
         ordering = ["name"]
 
+    @property
+    def percent_completed(self) -> float:
+        total_todos = self.todos.count()
+        total_pending_todos = self.todos.filter(completion_date=None).count()
+
+        if total_todos > 0:
+            return (total_todos - total_pending_todos) / total_todos * 100
+
+        return 100
+
 
 class Context(models.Model):
     """A context can be any type of similar todos or related todos"""
@@ -32,6 +42,16 @@ class Context(models.Model):
 
     class Meta:
         ordering = ["name"]
+
+    @property
+    def percent_completed(self) -> float:
+        total_todos = self.todos.count()
+        total_pending_todos = self.todos.filter(completion_date=None).count()
+
+        if total_todos > 0:
+            return (total_todos - total_pending_todos) / total_todos * 100
+
+        return 100
 
 
 class Todo(models.Model):
@@ -87,6 +107,11 @@ class Todo(models.Model):
             return timezone.localdate() + relativedelta(days=3) > self.due_date and timezone.localdate() <= self.due_date
 
         return False
+
+    @property
+    def has_strict_recurrence(self) -> bool:
+        """Returns True if recurrece is set in a strict way"""
+        return self.recurrence.startswith("+")
 
     @property
     def due_date_code(self) -> int:
@@ -177,10 +202,10 @@ class Todo(models.Model):
             task.add_attribute("rec", self.recurrence)
 
         for project in self.projects.all():
-            task.add_project(text.slugify(project.name))
+            task.add_project(project.name.replace(" ", "-"))
 
         for context in self.contexts.all():
-            task.add_context(text.slugify(context.name))
+            task.add_context(context.name.replace(" ", "-"))
 
         return str(task)
 
