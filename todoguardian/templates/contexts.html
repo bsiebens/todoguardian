@@ -1,0 +1,18 @@
+{% extends "_base.html" %}
+
+{% block title %}Contexts{% endblock title %}
+
+{% block content %}
+    <div class="w-full mt-2 mb-6 text-2xl font-medium">Contexts</div>
+
+    <div class="grid grid-cols-1 gap-2 laptop:grid-cols-6">
+        {% for context in contexts %}
+            <a href="{% url "todoguardian:dashboard" %}?context={{ context.id }}" class="group">
+                <div class="flex flex-row p-2 border-2 rounded-md place-items-center gap-x-2 group-hover:border-info">
+                    <div class="radial-progress group-hover:text-info" style="--value:{{ context.percent_completed }};" role="progressbar">{{ context.percent_completed }}%</div>
+                    <div class="text-lg font-medium group-hover:text-info">{{ context.name }}</div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+{% endblock content %}
