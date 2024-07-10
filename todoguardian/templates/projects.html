@@ -9,7 +9,7 @@
         {% for project in projects %}
             <a href="{% url "todoguardian:dashboard" %}?project={{ project.id }}" class="group">
                 <div class="flex flex-row p-2 border-2 rounded-md place-items-center gap-x-2 group-hover:border-info">
-                    <div class="radial-progress group-hover:text-info" style="--value:{{ project.percent_completed }};" role="progressbar">{{ project.percent_completed }}%</div>
+                    <div class="radial-progress group-hover:text-info" style="--value:{{ project.percent_completed|floatformat }};" role="progressbar">{{ project.percent_completed|floatformat }}%</div>
                     <div class="text-lg font-medium group-hover:text-info">{{ project.name }}</div>
                 </div>
             </a>
